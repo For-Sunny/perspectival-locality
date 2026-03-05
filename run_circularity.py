@@ -32,6 +32,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.coupling_distance import run_circularity_breaking
+from src.utils import NumpyEncoder
 from pathlib import Path
 
 
@@ -68,17 +69,8 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
     outpath = results_dir / "circularity_breaking.json"
 
-    def json_default(obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        if isinstance(obj, (np.floating, np.float64, np.float32)):
-            return float(obj)
-        if isinstance(obj, (np.integer, np.int64, np.int32)):
-            return int(obj)
-        return str(obj)
-
     with open(outpath, 'w') as f:
-        json.dump(results, f, indent=2, default=json_default)
+        json.dump(results, f, indent=2, cls=NumpyEncoder)
 
     # Print final summary
     print(f"\n\n{'='*70}")

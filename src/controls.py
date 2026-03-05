@@ -36,6 +36,8 @@ from .quantum import (
     correlation_matrix, von_neumann_entropy,
     mutual_information, connected_correlation,
 )
+from .experiments import _mi_to_distance, _effective_dimension
+from .utils import NumpyEncoder
 
 
 RESULTS_DIR = Path(__file__).parent.parent / "results"
@@ -44,62 +46,7 @@ RESULTS_DIR = Path(__file__).parent.parent / "results"
 def _save_result(name: str, data: dict):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(RESULTS_DIR / f"{name}.json", 'w') as f:
-        json.dump(data, f, indent=2, default=_json_default)
-
-
-def _json_default(obj):
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.floating):
-        return float(obj)
-    if isinstance(obj, np.integer):
-        return int(obj)
-    if isinstance(obj, (np.bool_,)):
-        return bool(obj)
-    return str(obj)
-
-
-def _mi_to_distance(MI: np.ndarray) -> np.ndarray:
-    """Convert mutual information matrix to distance matrix: d = 1/MI."""
-    n = MI.shape[0]
-    D = np.zeros_like(MI)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if MI[i, j] > 1e-14:
-                D[i, j] = 1.0 / MI[i, j]
-            else:
-                D[i, j] = 1e6
-            D[j, i] = D[i, j]
-    return D
-
-
-def _effective_dimension(D: np.ndarray, threshold: float = 0.9) -> float:
-    """
-    Effective embedding dimension via classical MDS.
-    Number of eigenvalues of doubly-centered D^2 to capture 'threshold' variance.
-    """
-    n = D.shape[0]
-    if n < 3:
-        return 1.0
-
-    D2 = D ** 2
-    J = np.eye(n) - np.ones((n, n)) / n
-    B = -0.5 * J @ D2 @ J
-
-    eigenvalues = np.linalg.eigvalsh(B)
-    eigenvalues = eigenvalues[::-1]
-
-    pos_eig = eigenvalues[eigenvalues > 1e-10]
-    if len(pos_eig) == 0:
-        return 1.0
-
-    total = np.sum(pos_eig)
-    if total < 1e-14:
-        return 1.0
-
-    cumulative = np.cumsum(pos_eig) / total
-    dim = np.searchsorted(cumulative, threshold) + 1
-    return float(dim)
+        json.dump(data, f, indent=2, cls=NumpyEncoder)
 
 
 def _compute_decay_stats(MI_mat: np.ndarray, C_mat: np.ndarray,

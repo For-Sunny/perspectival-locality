@@ -35,6 +35,9 @@ from src.quantum import (
     mutual_information_matrix, correlation_matrix,
     connected_correlation,
 )
+from src.experiments import _mi_to_distance, _effective_dimension
+from src.statistics import bootstrap_ci as _stats_bootstrap_ci
+from src.utils import NumpyEncoder
 
 try:
     import torch
@@ -43,41 +46,6 @@ except ImportError:
     HAS_GPU = False
 
 RESULTS_DIR = Path(__file__).parent / "results"
-
-
-def _mi_to_distance(MI: np.ndarray) -> np.ndarray:
-    """Convert mutual information matrix to distance matrix."""
-    n = MI.shape[0]
-    D = np.zeros_like(MI)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if MI[i, j] > 1e-14:
-                D[i, j] = 1.0 / MI[i, j]
-            else:
-                D[i, j] = 1e6
-            D[j, i] = D[i, j]
-    return D
-
-
-def _effective_dimension(D: np.ndarray, threshold: float = 0.9) -> float:
-    """Effective embedding dimension via classical MDS."""
-    n = D.shape[0]
-    if n < 3:
-        return 1.0
-    D2 = D ** 2
-    J = np.eye(n) - np.ones((n, n)) / n
-    B = -0.5 * J @ D2 @ J
-    eigenvalues = np.linalg.eigvalsh(B)
-    eigenvalues = eigenvalues[::-1]
-    pos_eig = eigenvalues[eigenvalues > 1e-10]
-    if len(pos_eig) == 0:
-        return 1.0
-    total = np.sum(pos_eig)
-    if total < 1e-14:
-        return 1.0
-    cumulative = np.cumsum(pos_eig) / total
-    dim = np.searchsorted(cumulative, threshold) + 1
-    return float(dim)
 
 
 def compute_decay_pearson(psi, n_qubits, subset, pauli='Z'):
@@ -128,19 +96,12 @@ def compute_dim_ratio(psi, n_qubits, subset):
 
 
 def bootstrap_ci(values, n_boot=2000, ci=0.95):
-    """Bootstrap confidence interval for the mean."""
+    """Bootstrap confidence interval for the mean. Returns (mean, lo, hi) tuple."""
     values = np.array([v for v in values if np.isfinite(v)])
     if len(values) < 3:
         return float('nan'), float('nan'), float('nan')
-    rng = np.random.default_rng(42)
-    boot_means = np.array([
-        np.mean(rng.choice(values, size=len(values), replace=True))
-        for _ in range(n_boot)
-    ])
-    alpha = (1 - ci) / 2
-    lo = np.percentile(boot_means, 100 * alpha)
-    hi = np.percentile(boot_means, 100 * (1 - alpha))
-    return float(np.mean(values)), float(lo), float(hi)
+    result = _stats_bootstrap_ci(values, n_bootstrap=n_boot, ci=ci, seed=42)
+    return result["estimate"], result["ci_low"], result["ci_high"]
 
 
 def run_symmetry_breaking(n_qubits=8, n_trials=20):
@@ -410,7 +371,7 @@ def run_symmetry_breaking(n_qubits=8, n_trials=20):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     outpath = RESULTS_DIR / "symmetry_breaking.json"
     with open(outpath, 'w') as f:
-        json.dump(output, f, indent=2, default=lambda o: float(o) if isinstance(o, (np.floating, np.integer)) else str(o))
+        json.dump(output, f, indent=2, cls=NumpyEncoder)
 
     print(f"\n  Results saved to {outpath}")
     return output

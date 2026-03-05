@@ -24,6 +24,7 @@ from .quantum import (
     correlation_matrix, von_neumann_entropy,
     mutual_information, connected_correlation,
 )
+from .utils import NumpyEncoder
 
 
 RESULTS_DIR = Path(__file__).parent.parent / "results"
@@ -32,17 +33,7 @@ RESULTS_DIR = Path(__file__).parent.parent / "results"
 def _save_result(name: str, data: dict):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(RESULTS_DIR / f"{name}.json", 'w') as f:
-        json.dump(data, f, indent=2, default=_json_default)
-
-
-def _json_default(obj):
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.floating):
-        return float(obj)
-    if isinstance(obj, np.integer):
-        return int(obj)
-    return str(obj)
+        json.dump(data, f, indent=2, cls=NumpyEncoder)
 
 
 # ─────────────────────────────────────────────────────────────

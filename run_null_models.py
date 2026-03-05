@@ -40,6 +40,7 @@ from src.statistics import (
     bootstrap_ci,
     _pearson_r_log_corr_vs_dist,
 )
+from src.utils import NumpyEncoder
 
 
 def run_null_model_battery(N: int = 8, n_trials: int = 10,
@@ -271,7 +272,7 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
     out_path = results_dir / "null_models.json"
     with open(out_path, 'w') as f:
-        json.dump(output, f, indent=2, default=lambda o: float(o) if isinstance(o, (np.floating, np.integer)) else str(o))
+        json.dump(output, f, indent=2, cls=NumpyEncoder)
 
     print(f"\n{'='*70}")
     print(f"  COMPLETE. {elapsed:.1f}s total. Saved to {out_path}")

@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from src.quantum import random_all_to_all, mutual_information_matrix
 from src.experiments import _mi_to_distance
+from src.utils import NumpyEncoder
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -146,8 +147,7 @@ def main():
 
     outpath = RESULTS_DIR / "excited_states.json"
     with open(outpath, "w") as f:
-        json.dump(output, f, indent=2,
-                  default=lambda o: float(o) if isinstance(o, (np.floating, np.integer)) else str(o))
+        json.dump(output, f, indent=2, cls=NumpyEncoder)
     print(f"\nSaved to {outpath}")
 
 

@@ -32,69 +32,22 @@ from src.quantum import (
     random_all_to_all_sparse, ground_state_sparse,
     partial_trace, mutual_information_matrix, von_neumann_entropy,
 )
+from src.experiments import _mi_to_distance, _effective_dimension
+from src.statistics import bootstrap_ci as _stats_bootstrap_ci
+from src.utils import NumpyEncoder
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _mi_to_distance(MI: np.ndarray) -> np.ndarray:
-    """Convert MI matrix to distance: d(i,j) = 1/MI(i,j)."""
-    n = MI.shape[0]
-    D = np.zeros_like(MI)
-    for i in range(n):
-        for j in range(i + 1, n):
-            if MI[i, j] > 1e-14:
-                D[i, j] = 1.0 / MI[i, j]
-            else:
-                D[i, j] = 1e6
-            D[j, i] = D[i, j]
-    return D
-
-
-def _effective_dimension(D: np.ndarray, threshold: float = 0.9) -> float:
-    """
-    Effective embedding dimension via classical MDS.
-    Number of eigenvalues of doubly-centered D^2 needed to capture
-    'threshold' fraction of variance.
-    """
-    n = D.shape[0]
-    if n < 3:
-        return 1.0
-
-    D2 = D ** 2
-    J = np.eye(n) - np.ones((n, n)) / n
-    B = -0.5 * J @ D2 @ J
-
-    eigenvalues = np.linalg.eigvalsh(B)
-    eigenvalues = eigenvalues[::-1]  # descending
-
-    pos_eig = eigenvalues[eigenvalues > 1e-10]
-    if len(pos_eig) == 0:
-        return 1.0
-
-    total = np.sum(pos_eig)
-    if total < 1e-14:
-        return 1.0
-
-    cumulative = np.cumsum(pos_eig) / total
-    dim = np.searchsorted(cumulative, threshold) + 1
-    return float(dim)
-
-
 def _bootstrap_ci(data, n_bootstrap=1000, ci=0.95):
-    """Bootstrap confidence interval for the mean."""
-    if len(data) < 2:
-        m = np.mean(data)
+    """Thin wrapper around src.statistics.bootstrap_ci returning (mean, lo, hi) tuple."""
+    values = np.array([v for v in data if np.isfinite(v)])
+    if len(values) < 2:
+        m = float(np.mean(values)) if len(values) > 0 else 0.0
         return m, m, m
-    rng = np.random.default_rng(42)
-    means = []
-    for _ in range(n_bootstrap):
-        sample = rng.choice(data, size=len(data), replace=True)
-        means.append(np.mean(sample))
-    means = sorted(means)
-    lo = means[int((1 - ci) / 2 * n_bootstrap)]
-    hi = means[int((1 + ci) / 2 * n_bootstrap)]
-    return float(np.mean(data)), float(lo), float(hi)
+    result = _stats_bootstrap_ci(values, n_bootstrap=n_bootstrap, ci=ci, seed=42)
+    return result["estimate"], result["ci_low"], result["ci_high"]
 
 
 def compute_observer_metrics(psi, N, k):
@@ -306,7 +259,7 @@ def main():
 
     outpath = RESULTS_DIR / "large_n.json"
     with open(outpath, 'w') as f:
-        json.dump(output, f, indent=2, default=lambda o: float(o) if isinstance(o, (np.floating, np.integer)) else str(o))
+        json.dump(output, f, indent=2, cls=NumpyEncoder)
     print(f"\n  Saved to {outpath}")
 
 

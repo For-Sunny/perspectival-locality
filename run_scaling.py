@@ -27,6 +27,7 @@ from src.statistics import (
     bootstrap_ci, permutation_test_dim_ratio,
     pvalue_r_negative, shuffled_null_pearson_r, _pearson_r_log_corr_vs_dist,
 )
+from src.utils import NumpyEncoder
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -257,9 +258,15 @@ def main():
     print("  For Physical Review Letters")
     print("=" * 70)
 
-    import torch
-    print(f"\n  GPU: {torch.cuda.get_device_name(0)}")
-    print(f"  VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+    try:
+        import torch
+        if torch.cuda.is_available():
+            print(f"\n  GPU: {torch.cuda.get_device_name(0)}")
+            print(f"  VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+        else:
+            print("\n  GPU: not available (CUDA not found), using CPU")
+    except ImportError:
+        print("\n  GPU: not available (torch not installed), using CPU")
     print(f"  Trials per N: {N_TRIALS}")
     print(f"  Bootstrap resamples: {N_BOOTSTRAP}")
     print(f"  k/N ratios: {K_RATIOS}")
@@ -325,7 +332,7 @@ def main():
     # Save
     outpath = RESULTS_DIR / "scaling_N10_N12.json"
     with open(outpath, 'w') as f:
-        json.dump(all_results, f, indent=2, default=lambda o: float(o) if isinstance(o, np.floating) else int(o) if isinstance(o, np.integer) else str(o))
+        json.dump(all_results, f, indent=2, cls=NumpyEncoder)
     print(f"\n  Results saved to: {outpath}")
 
 

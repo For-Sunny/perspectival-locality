@@ -321,7 +321,7 @@ def random_pauli_all_to_all(n_qubits: int, seed: Optional[int] = None) -> tuple:
 
 
 def nearest_neighbor_chain(n_qubits: int, couplings: Optional[np.ndarray] = None,
-                           periodic: bool = False) -> np.ndarray:
+                           periodic: bool = False, seed: Optional[int] = None) -> np.ndarray:
     """
     1D nearest-neighbor Heisenberg chain.
 
@@ -334,12 +334,14 @@ def nearest_neighbor_chain(n_qubits: int, couplings: Optional[np.ndarray] = None
         n_qubits: number of sites
         couplings: array of length n_bonds. If None, random Gaussian J_i.
         periodic: if True, adds bond between site N-1 and site 0.
+        seed: RNG seed for reproducibility when couplings is None.
     """
     n_bonds = n_qubits if periodic else n_qubits - 1
     dim = 2 ** n_qubits
 
     if couplings is None:
-        couplings = np.random.standard_normal(n_bonds)
+        rng = np.random.default_rng(seed)
+        couplings = rng.standard_normal(n_bonds)
 
     H = np.zeros((dim, dim), dtype=np.complex128)
 
@@ -568,34 +570,7 @@ def partial_trace(psi: np.ndarray, keep: list[int], n_qubits: int) -> np.ndarray
 
     Returns: reduced density matrix of dimension 2^len(keep) x 2^len(keep)
     """
-    # Reshape state vector into tensor with one index per qubit
-    psi_tensor = psi.reshape([2] * n_qubits)
-
-    # Compute full density matrix as outer product in tensor form
-    rho_tensor = np.einsum(
-        psi_tensor, range(n_qubits),
-        np.conj(psi_tensor), range(n_qubits, 2 * n_qubits)
-    )
-    # rho_tensor has indices [0, 1, ..., n-1, n, n+1, ..., 2n-1]
-    # where first n are ket indices, last n are bra indices
-
-    # Trace out qubits not in keep
-    trace_out = sorted(set(range(n_qubits)) - set(keep))
-
-    # Contract ket and bra indices for traced-out qubits
-    # We need to trace over pairs (i, i+n_qubits) for i in trace_out
-    # Do this iteratively from highest index to preserve ordering
-    result = rho_tensor
-    offset = 0
-    for q in sorted(trace_out, reverse=True):
-        ket_idx = q - offset
-        bra_idx = ket_idx + (n_qubits - offset)  # NOT RIGHT
-        # Actually, let's use a simpler approach
-
-    # Simpler: use numpy trace over axes
-    # Reshape into density matrix, then trace
-
-    # Better approach: direct computation
+    # Direct computation via reshape + matrix multiply
     keep_sorted = sorted(keep)
     n_keep = len(keep_sorted)
     n_trace = n_qubits - n_keep
@@ -632,7 +607,8 @@ def von_neumann_entropy(rho: np.ndarray) -> float:
     eigenvalues = np.linalg.eigvalsh(rho)
     # Filter out zero/negative eigenvalues (numerical noise)
     eigenvalues = eigenvalues[eigenvalues > 1e-14]
-    return float(-np.sum(eigenvalues * np.log2(eigenvalues)))
+    result = float(-np.sum(eigenvalues * np.log2(eigenvalues)))
+    return max(0.0, result)
 
 
 def mutual_information(psi: np.ndarray, sites_a: list[int], sites_b: list[int],

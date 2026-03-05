@@ -23,7 +23,9 @@ from src.quantum import (
     random_all_to_all, ground_state_gpu, ground_state,
     mutual_information_matrix, correlation_matrix,
 )
+from src.experiments import _effective_dimension
 from src.statistics import bootstrap_ci
+from src.utils import NumpyEncoder
 
 
 # ─────────────────────────────────────────────────────────────
@@ -72,34 +74,8 @@ DISTANCE_FNS = {
 }
 
 
-# ─────────────────────────────────────────────────────────────
-# Effective dimension (copied from experiments.py for independence)
-# ─────────────────────────────────────────────────────────────
-
-def effective_dimension(D, threshold=0.9):
-    """Number of MDS eigenvalues needed to capture threshold fraction of variance."""
-    n = D.shape[0]
-    if n < 3:
-        return 1.0
-
-    D2 = D ** 2
-    J = np.eye(n) - np.ones((n, n)) / n
-    B = -0.5 * J @ D2 @ J
-
-    eigenvalues = np.linalg.eigvalsh(B)
-    eigenvalues = eigenvalues[::-1]  # descending
-
-    pos_eig = eigenvalues[eigenvalues > 1e-10]
-    if len(pos_eig) == 0:
-        return 1.0
-
-    total = np.sum(pos_eig)
-    if total < 1e-14:
-        return 1.0
-
-    cumulative = np.cumsum(pos_eig) / total
-    dim = np.searchsorted(cumulative, threshold) + 1
-    return float(dim)
+# Alias for backward compatibility
+effective_dimension = _effective_dimension
 
 
 # ─────────────────────────────────────────────────────────────
@@ -351,7 +327,7 @@ def run_distance_robustness(N=8, n_trials=20, k_over_N_values=(0.375, 0.5), use_
     results_dir.mkdir(parents=True, exist_ok=True)
     output_path = results_dir / "distance_robustness.json"
     with open(output_path, 'w') as f:
-        json.dump(results, f, indent=2, default=lambda x: float(x) if isinstance(x, (np.floating, np.integer)) else str(x))
+        json.dump(results, f, indent=2, cls=NumpyEncoder)
 
     print(f"\n  Results saved to: {output_path}")
     return results

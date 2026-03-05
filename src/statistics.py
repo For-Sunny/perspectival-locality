@@ -292,20 +292,23 @@ def eigenvalue_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
 
 
 # ─────────────────────────────────────────────────────────────
-# Null model 3: degree-preserving shuffle
+# Null model 3: restricted permutation shuffle
 # ─────────────────────────────────────────────────────────────
 
-def degree_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
-                            n_shuffles: int = 200, seed: int = 0) -> dict:
+def restricted_permutation_null(MI_obs: np.ndarray, C_obs: np.ndarray,
+                                 n_shuffles: int = 200, seed: int = 0) -> dict:
     """
-    Null model: shuffle MI matrix entries while approximately preserving
-    row sums (total MI per qubit = "degree" of each qubit in the MI graph).
+    Null model: shuffle MI matrix entries by swapping values between pairs
+    that share no qubits.
 
-    Uses the configuration model approach: repeatedly pick two random edges
-    and swap their MI values, which preserves row sums exactly.
+    NOTE: this does NOT preserve row sums (per-qubit total MI). Swapping MI
+    values between non-overlapping pairs (i1,j1) and (i2,j2) changes the
+    row sums of all four involved qubits. The constraint merely prevents
+    self-loops and restricts which swaps are allowed, making this a
+    restricted permutation rather than a degree-preserving shuffle.
 
-    This tests: does the pairwise structure matter, or just how connected
-    each qubit is overall?
+    This tests: does the pairwise structure matter beyond what restricted
+    random permutation can explain?
     If real r is far from this null -> specific pairwise MI assignments matter.
     """
     rng = np.random.default_rng(seed)
@@ -358,8 +361,12 @@ def degree_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
         "n_shuffles": n_shuffles,
         "effect_size": float((real_r - np.mean(null_rs)) / np.std(null_rs))
             if np.std(null_rs) > 1e-14 else 0.0,
-        "null_type": "degree_preserving",
+        "null_type": "restricted_permutation",
     }
+
+
+# Backwards-compatible alias
+degree_preserving_null = restricted_permutation_null
 
 
 # ─────────────────────────────────────────────────────────────
@@ -368,7 +375,7 @@ def degree_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
 
 def random_hamiltonian_null(psi: np.ndarray, C_obs: np.ndarray,
                              n_qubits: int, k: int, subset: list[int],
-                             n_shuffles: int = 20, seed: int = 0,
+                             n_shuffles: int = 100, seed: int = 0,
                              use_gpu: bool = True) -> dict:
     """
     Null model: use MI matrices from DIFFERENT random Hamiltonians to predict
@@ -625,11 +632,15 @@ def hardened_experiment_5(n_qubits_list: list[int], n_trials: int = 50,
                             "null_r_mean": [],
                             "null_p_value": [],
                             "null_effect_size": [],
+                            "per_hamiltonian_r": {},
                         }
                     all_data[key]["real_r"].append(real_r)
                     all_data[key]["null_r_mean"].append(null_result["shuffled_r_mean"])
                     all_data[key]["null_p_value"].append(null_result["p_value"])
                     all_data[key]["null_effect_size"].append(null_result["effect_size"])
+                    # Track per-Hamiltonian for corrected analysis
+                    ham_key = (N, trial)
+                    all_data[key]["per_hamiltonian_r"].setdefault(ham_key, []).append(real_r)
 
             if (trial + 1) % 10 == 0:
                 print(f"    Trial {trial + 1}/{n_trials}")
@@ -643,11 +654,22 @@ def hardened_experiment_5(n_qubits_list: list[int], n_trials: int = 50,
         null_p_arr = np.array(data["null_p_value"])
         null_es_arr = np.array(data["null_effect_size"])
 
-        # Bootstrap CI on mean Pearson r
-        ci = bootstrap_ci(r_arr, n_bootstrap=n_bootstrap, seed=42 + N * 100 + k)
+        # ── CORRECTED ANALYSIS (PRIMARY) ──
+        # Average r-values within each Hamiltonian first, then test on
+        # per-Hamiltonian means. This is correct because subsets of the
+        # SAME Hamiltonian share the quantum state and are not independent.
+        per_ham_r = data["per_hamiltonian_r"]
+        ham_means = np.array([float(np.mean(rs)) for rs in per_ham_r.values()])
+        n_hamiltonians = len(ham_means)
 
-        # P-value for H0: r >= 0
-        p_test = pvalue_r_negative(r_arr, n_bootstrap=n_bootstrap, seed=42 + N * 100 + k)
+        ci_corrected = bootstrap_ci(ham_means, n_bootstrap=n_bootstrap,
+                                     seed=42 + N * 100 + k + 7)
+        p_test_corrected = pvalue_r_negative(ham_means, n_bootstrap=n_bootstrap,
+                                              seed=42 + N * 100 + k + 7)
+
+        # ── POOLED ANALYSIS (LEGACY, kept for comparison) ──
+        ci_pooled = bootstrap_ci(r_arr, n_bootstrap=n_bootstrap, seed=42 + N * 100 + k)
+        p_test_pooled = pvalue_r_negative(r_arr, n_bootstrap=n_bootstrap, seed=42 + N * 100 + k)
 
         # Null model summary
         null_summary = {
@@ -664,20 +686,31 @@ def hardened_experiment_5(n_qubits_list: list[int], n_trials: int = 50,
             "N": N,
             "k": k,
             "k_over_N": round(k_over_N, 4),
-            "n_samples": len(r_arr),
-            "pearson_r_bootstrap": ci,
-            "decay_pvalue": p_test,
+            "n_samples_pooled": len(r_arr),
+            "n_hamiltonians": n_hamiltonians,
+            # Corrected analysis (primary)
+            "pearson_r_bootstrap": ci_corrected,
+            "decay_pvalue": p_test_corrected,
+            # Pooled analysis (legacy, inflated effective n)
+            "pooled_pearson_r_bootstrap": ci_pooled,
+            "pooled_decay_pvalue": p_test_pooled,
             "null_model": null_summary,
             "raw_real_r": r_arr.tolist(),
+            "raw_hamiltonian_means": ham_means.tolist(),
             "raw_null_r_mean": null_r_arr.tolist(),
             "raw_null_p": null_p_arr.tolist(),
         }
 
-        sig = "***" if p_test["p_value_ttest_onesided"] < 0.001 else "**" if p_test["p_value_ttest_onesided"] < 0.01 else "*" if p_test["p_value_ttest_onesided"] < 0.05 else "ns"
+        sig_c = "***" if p_test_corrected["p_value_ttest_onesided"] < 0.001 else "**" if p_test_corrected["p_value_ttest_onesided"] < 0.01 else "*" if p_test_corrected["p_value_ttest_onesided"] < 0.05 else "ns"
+        sig_p = "***" if p_test_pooled["p_value_ttest_onesided"] < 0.001 else "**" if p_test_pooled["p_value_ttest_onesided"] < 0.01 else "*" if p_test_pooled["p_value_ttest_onesided"] < 0.05 else "ns"
         print(f"\n  N={N}, k={k} (k/N={k_over_N:.2f}):")
-        print(f"    Pearson r = {ci['estimate']:.4f}  95% CI [{ci['ci_low']:.4f}, {ci['ci_high']:.4f}]")
-        print(f"    H0(r>=0) p = {p_test['p_value_ttest_onesided']:.6f} {sig}")
-        print(f"    {p_test['n_negative']}/{p_test['n']} trials show negative r")
+        print(f"    CORRECTED (per-Hamiltonian means, n={n_hamiltonians}):")
+        print(f"      Pearson r = {ci_corrected['estimate']:.4f}  95% CI [{ci_corrected['ci_low']:.4f}, {ci_corrected['ci_high']:.4f}]")
+        print(f"      H0(r>=0) p = {p_test_corrected['p_value_ttest_onesided']:.6f} {sig_c}")
+        print(f"      {p_test_corrected['n_negative']}/{p_test_corrected['n']} Hamiltonians show negative mean r")
+        print(f"    POOLED (all subsets, n={len(r_arr)}, NOT independent):")
+        print(f"      Pearson r = {ci_pooled['estimate']:.4f}  95% CI [{ci_pooled['ci_low']:.4f}, {ci_pooled['ci_high']:.4f}]")
+        print(f"      H0(r>=0) p = {p_test_pooled['p_value_ttest_onesided']:.6f} {sig_p}")
         print(f"    Null model: real r = {null_summary['mean_real_r']:.4f}, shuffled r = {null_summary['mean_null_r']:.4f}")
         print(f"    Null p<0.05 in {null_summary['frac_null_p_lt_005']:.1%} of trials")
         print(f"    Effect size (Cohen's d from null): {null_summary['mean_effect_size']:.2f}")

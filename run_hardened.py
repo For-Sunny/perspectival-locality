@@ -30,21 +30,10 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 
 from src.statistics import hardened_experiment_2, hardened_experiment_5
+from src.utils import NumpyEncoder
 
 
 RESULTS_DIR = Path(__file__).parent / "results"
-
-
-def _json_default(obj):
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.floating):
-        return float(obj)
-    if isinstance(obj, np.integer):
-        return int(obj)
-    if isinstance(obj, (np.bool_,)):
-        return bool(obj)
-    return str(obj)
 
 
 def print_header():
@@ -236,7 +225,7 @@ def main():
 
     outpath = RESULTS_DIR / "hardened_stats.json"
     with open(outpath, 'w') as f:
-        json.dump(output, f, indent=2, default=_json_default)
+        json.dump(output, f, indent=2, cls=NumpyEncoder)
 
     print(f"  Results saved to: {outpath}")
     print(f"  Total time: {time.time() - t_total:.1f}s")

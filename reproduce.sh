@@ -55,43 +55,43 @@ echo
 # 4. Observable sweep (CMI, tripartite information, entanglement spectrum)
 echo "[4/9] Observable sweep (run_observables.py) ..."
 START=$SECONDS
-python run_observables.py
+python run_observables.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
 # 5. Circularity-breaking tests
 echo "[5/9] Circularity breaking (run_circularity.py) ..."
 START=$SECONDS
-python run_circularity.py
+python run_circularity.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
 # 6. Symmetry-breaking control
 echo "[6/9] Symmetry-breaking control (run_symmetry_breaking.py) ..."
 START=$SECONDS
-python run_symmetry_breaking.py
+python run_symmetry_breaking.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
 # 7. Null model battery
 echo "[7/9] Null model battery (run_null_models.py) ..."
 START=$SECONDS
-python run_null_models.py
+python run_null_models.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
 # 8. Distance robustness
 echo "[8/9] Distance robustness (run_distance_robustness.py) ..."
 START=$SECONDS
-python run_distance_robustness.py
+python run_distance_robustness.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
 # 9. Scaling and large-N
 echo "[9/9] Scaling study (run_scaling.py + run_large_n.py) ..."
 START=$SECONDS
-python run_scaling.py
-python run_large_n.py
+python run_scaling.py $GPU_FLAG
+python run_large_n.py $GPU_FLAG
 echo "       Done in $(( SECONDS - START ))s"
 echo
 
