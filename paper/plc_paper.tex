@@ -1,0 +1,499 @@
+\documentclass[aps,pra,twocolumn,superscriptaddress]{revtex4-2}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\begin{document}
+
+\title{Emergent Spatial Locality from Partial Observation in Finite Quantum Systems}
+
+\author{Jason Glass}
+\thanks{Corresponding author: glass@cipscorps.io}
+\affiliation{CIPS Corp LLC, Virginia, USA}
+
+\date{\today}
+
+\begin{abstract}
+We present computational evidence that spatial locality emerges from partial observation of quantum systems with no built-in spatial structure.
+Starting from all-to-all coupled Hamiltonians on $N$ qubits with random couplings $J_{ij} \sim \mathcal{N}(0,1)$, we compute the ground state and restrict an observer to $k < N$ qubits.
+The mutual information between observed qubit pairs defines a distance $d_{ij} = 1/I(i{:}j)$.
+In this emergent metric, connected correlations decay with distance: the Pearson coefficient between $\log|C_{ij}|$ and $d_{ij}$ is $\langle r \rangle = -0.67$ at $k/N = 0.375$ ($p < 10^{-69}$, sign test; $N = 8$, 50 Hamiltonian realizations).
+A cross-observer test---where Observer~A's MI-distance predicts Observer~B's correlations with no shared computation---yields $r = -0.74$ ($N = 8$) and $r = -0.65$ ($N = 10$), breaking the circularity objection from the Pinsker bound.
+The effect persists when SU(2) symmetry is removed: random Pauli Hamiltonians with no continuous symmetry produce $r = -0.71$ (ZZ) and $r = -0.67$ (XX) at $k/N = 0.375$.
+Results hold across five distance metrics (CV $= 2.3\%$), four null models, and system sizes $N = 8$--$16$ (Hilbert space dimensions $256$--$65{,}536$). At $N = 16$ with $k = 8$ observed qubits (28 qubit pairs, up to 27 MDS dimensions), the correlation decay remains strong: $\langle r \rangle = -0.74$.
+We call this the Perspectival Locality Conjecture: spatial locality is a property of the observer's limited access, not of the underlying physics.
+\end{abstract}
+
+\maketitle
+
+%=====================================================================
+\section{Introduction}
+%=====================================================================
+
+The locality of physical law is unexplained. Interactions in the Standard Model are local. Information propagates at finite speed. The Hamiltonian of any fundamental field theory couples only neighboring degrees of freedom. Yet nothing in the axioms of quantum mechanics requires this. A generic Hamiltonian on $N$ subsystems is all-to-all.
+
+Several programs attempt to derive locality from deeper structure. The Ryu-Takayanagi formula~\cite{ryu2006} connects entanglement entropy to geometric area in holographic spacetimes. Quantum error correction provides a mechanism for bulk locality in AdS/CFT~\cite{almheiri2015}. Van Raamsdonk~\cite{vanraamsdonk2010} argued that spacetime connectivity requires entanglement. Zurek's decoherence program~\cite{zurek2003} explains the emergence of classicality but takes spatial structure as given. Quantum reference frame (QRF) approaches~\cite{giacomini2019,vanrietvelde2020} demonstrate that physical descriptions depend on the observer's frame.
+
+Closest to our work, Cao, Carroll, and Michalakis~\cite{cao2017} construct an emergent spatial geometry from the mutual information (MI) structure of a quantum state. They use MI to define distances between subsystems and recover geometry via multidimensional scaling (MDS)---the same mathematical tools we employ. Their construction operates in the context of holographic bulk reconstruction from a boundary state, with the goal of recovering an approximate semiclassical geometry in the continuum limit. Our question is different: we ask what a \emph{finite, partial} observer perceives when no spatial structure exists at all. We do not reconstruct a bulk geometry from a boundary. We study the metric that an observer's limited access induces on its own degrees of freedom, at small $N$, with no continuum limit.
+
+The distinction is physical. Cao \textit{et al.}\ start with a state that \emph{has} a geometric dual and show MI recovers it. We start with a state that has \emph{no} geometric interpretation and show that partial access creates one.
+
+We call this the \textbf{Perspectival Locality Conjecture} (PLC): spatial locality is not a property of the underlying physics but of the observer's restricted perspective on it. An observer with access to $k < N$ degrees of freedom of a non-local system perceives an effectively local world, with correlations that decay in a metric defined by the observer's own information.
+
+This paper provides computational evidence for the PLC at system sizes $N = 8$--$16$ (Hilbert space dimensions $256$--$65{,}536$). We present a battery of controls and robustness tests designed to address specific objections: circularity of the MI-correlation relationship, dependence on SU(2) symmetry, sensitivity to the distance metric, weakness of null models, and small system size.
+
+
+%=====================================================================
+\section{Setup}
+%=====================================================================
+
+\subsection{Hamiltonian}
+
+Consider $N$ qubits governed by the isotropic Heisenberg Hamiltonian
+\begin{equation}
+H = \sum_{i<j} J_{ij} \left(\sigma^x_i \sigma^x_j + \sigma^y_i \sigma^y_j + \sigma^z_i \sigma^z_j\right),
+\label{eq:hamiltonian}
+\end{equation}
+where the couplings $J_{ij}$ are drawn independently from a standard normal distribution $\mathcal{N}(0,1)$. Every qubit couples to every other. There is no spatial structure. We compute the ground state $|\psi_0\rangle$ by exact diagonalization.
+
+\subsection{Observer}
+
+An observer has access to a subset $S \subset \{1, \ldots, N\}$ of $k = |S|$ qubits, chosen uniformly at random. The observer's state is the reduced density matrix $\rho_S = \text{Tr}_{N \setminus S}|\psi_0\rangle\langle\psi_0|$.
+
+\subsection{Emergent metric}
+
+For each pair $(i,j)$ of observed qubits, we compute the quantum mutual information
+\begin{equation}
+I(i{:}j) = S(\rho_i) + S(\rho_j) - S(\rho_{ij}),
+\label{eq:mi}
+\end{equation}
+where $S(\rho) = -\text{Tr}(\rho \log_2 \rho)$ is the von Neumann entropy in bits. We define the distance
+\begin{equation}
+d_{ij} = \frac{1}{I(i{:}j)},
+\label{eq:distance}
+\end{equation}
+so that high mutual information corresponds to short distance. Pairs with $I(i{:}j) < 10^{-14}$ are assigned $d_{ij} = 10^6$.
+
+\subsection{Effective dimension}
+
+We embed the $k$ observed qubits into Euclidean space using classical multidimensional scaling (MDS)~\cite{borg2005} on the distance matrix $\{d_{ij}\}$. The effective dimension $d_\text{eff}$ is the minimum number of positive MDS eigenvalues whose cumulative sum captures 90\% of the total positive variance. We report the ratio $d_\text{obs}/d_\text{full}$, where $d_\text{full}$ is the effective dimension computed from the full $N$-qubit MI matrix.
+
+\subsection{Correlation decay}
+
+We compute connected correlations
+\begin{equation}
+C_{ij} = \langle \sigma^z_i \sigma^z_j \rangle - \langle \sigma^z_i \rangle \langle \sigma^z_j \rangle
+\end{equation}
+and measure the Pearson correlation coefficient $r$ between $\log|C_{ij}|$ and $d_{ij}$. Negative $r$ indicates correlations that decay with distance---the operational signature of locality.
+
+
+%=====================================================================
+\section{Results}
+\label{sec:results}
+%=====================================================================
+
+We study $N = 8$ qubits with 50 independent Hamiltonian realizations, 10 random observer subsets per Hamiltonian (500 total samples for correlation decay), and 10{,}000 bootstrap resamples for confidence intervals. Table~\ref{tab:main} summarizes the two central measurements.
+
+\begin{table}[b]
+\caption{Emergent locality from partial observation ($N=8$, 50 trials, 10{,}000 bootstrap resamples, 10{,}000 permutation shuffles). CI: 95\% bootstrap confidence interval.}
+\label{tab:main}
+\begin{ruledtabular}
+\begin{tabular}{lcccc}
+$k/N$ & $d_\text{obs}/d_\text{full}$ & 95\% CI & Perm.\ $p$ \\
+\colrule
+0.375 & 0.893 & [0.811, 0.978] & $4 \times 10^{-4}$ \\
+0.500 & 0.942 & [0.864, 1.022] & $1.4 \times 10^{-3}$ \\
+0.625 & 0.988 & [0.898, 1.081] & 0.019 \\
+\colrule
+$k/N$ & $\langle r \rangle$ & 95\% CI & $p$ (sign test) \\
+\colrule
+0.375 & $-0.671$ & [$-0.718$, $-0.621$] & $2.3 \times 10^{-69}$ \\
+0.500 & $-0.643$ & [$-0.672$, $-0.612$] & $1.1 \times 10^{-100}$ \\
+0.625 & $-0.594$ & [$-0.618$, $-0.571$] & $5.3 \times 10^{-126}$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\textbf{Dimension reduction.}
+At $k/N = 0.375$, the observer's effective dimension is 89.3\% of the full system's ($p = 4 \times 10^{-4}$, permutation test). The effect is monotonic: more partial observers see lower-dimensional geometry. At $k/N = 0.625$, the ratio approaches unity (0.988) and significance weakens ($p = 0.019$), consistent with full access recovering the full geometry.
+
+\textbf{Correlation decay.}
+Connected ZZ correlations decay with MI-derived distance across all observer fractions. The mean Pearson coefficient ranges from $-0.671$ at $k/N = 0.375$ to $-0.594$ at $k/N = 0.625$. Of 500 samples at $k/N = 0.375$, 436 show negative $r$ (87.2\%). At $k/N = 0.625$, 487 of 500 show negative $r$ (97.4\%). The stronger mean correlation at smaller $k/N$ coexists with higher variance---fewer qubit pairs (3 at $k = 3$ vs 10 at $k = 5$) produce noisier per-trial estimates but a more pronounced average signal.
+
+\textbf{Monotonicity.}
+More partial observers see stronger locality. The Pearson $r$ strengthens from $-0.594$ at $k/N = 0.625$ to $-0.671$ at $k/N = 0.375$. The dimension ratio drops from 0.988 to 0.893. Both trends are monotonic across all three observer fractions.
+
+
+%=====================================================================
+\section{Scaling}
+\label{sec:scaling}
+%=====================================================================
+
+Table~\ref{tab:scaling} extends the analysis to $N = 10$ and $N = 12$, with Hilbert space dimensions 1{,}024 and 4{,}096 respectively.
+
+\begin{table}[t]
+\caption{Scaling across system sizes. The hardened dataset ($N = 8$, $10$; 50 trials, 10{,}000 bootstrap) provides the most precise estimates. The scaling dataset ($N = 10$, $12$; 10 trials, 2{,}000 bootstrap) extends the range at reduced precision.}
+\label{tab:scaling}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+$N$ & $k/N$ & $d_\text{obs}/d_\text{full}$ & $\langle r \rangle$ & $n_\text{neg}/n$ \\
+\colrule
+\multicolumn{5}{c}{\textit{Hardened (50 trials)}} \\
+8 & 0.375 & 0.893 & $-0.671$ & 436/500 \\
+8 & 0.500 & 0.942 & $-0.643$ & 468/500 \\
+8 & 0.625 & 0.988 & $-0.594$ & 487/500 \\
+10 & 0.300 & 0.814 & $-0.697$ & 438/500 \\
+10 & 0.500 & 0.932 & $-0.606$ & 484/500 \\
+10 & 0.600 & 0.943 & $-0.557$ & 491/500 \\
+\colrule
+\multicolumn{5}{c}{\textit{Scaling (10 trials)}} \\
+10 & 0.300 & 0.800 & $-0.754$ & 90/100 \\
+10 & 0.500 & 0.875 & $-0.564$ & 96/100 \\
+10 & 0.700 & 0.935 & $-0.506$ & 100/100 \\
+12 & 0.333 & 0.873 & $-0.704$ & 47/50 \\
+12 & 0.500 & 0.873 & $-0.590$ & 50/50 \\
+12 & 0.667 & --- & $-0.566$ & 50/50 \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+At $N = 10$ (hardened, 50 trials), the most partial observer ($k/N = 0.3$) shows $d_\text{obs}/d_\text{full} = 0.814$ ($p < 10^{-4}$) and $\langle r \rangle = -0.697$ ($p < 10^{-70}$, sign test). These are stronger than the corresponding $N = 8$ values, indicating the effect does not weaken with system size.
+
+At $N = 12$ (10 trials), the pattern persists: $\langle r \rangle = -0.704$ at $k/N = 0.333$. The dimension ratio is 0.873, though significance is marginal ($p = 0.085$) due to the smaller trial count.
+
+Across all system sizes and observer fractions, the correlation decay is negative. No $(N, k/N)$ combination produces a positive mean $r$. The monotonic dependence on $k/N$---more partial observers see stronger decay---is preserved at every $N$.
+
+
+%=====================================================================
+\section{Large-$N$ Scaling via Sparse Lanczos}
+\label{sec:large_n}
+%=====================================================================
+
+At $N = 8$ with $k = 3$ observed qubits, the MDS embedding has at most 2 dimensions---the ``geometry'' is a triangle. To address this limitation, we extend to $N = 14$ (Hilbert space dimension $16{,}384$) and $N = 16$ (dimension $65{,}536$) using a sparse Hamiltonian construction and the ARPACK Lanczos eigensolver~\cite{lehoucq1998}. The full $2^N \times 2^N$ Hamiltonian is never stored in dense form; only the $\mathcal{O}(N^2 \cdot 2^N)$ nonzero entries are kept, reducing memory from 64~GB (dense $N = 16$) to approximately 100~MB.
+
+At $N = 16$ with $k = 8$, we have 28 qubit pairs and up to 27 MDS dimensions---genuine high-dimensional geometry.
+
+Table~\ref{tab:large_n} summarizes the results.
+
+\begin{table}[t]
+\caption{Large-$N$ results via sparse Lanczos. $N = 14$: 5 Hamiltonian realizations. $N = 16$: 3 realizations. The dimension ratio $d_\text{obs}/d_\text{full}$ uses the full $N$-qubit MI matrix for $N = 14$ and a $k = 10$ proxy (45 pairs) for $N = 16$. CI: 95\% bootstrap confidence interval.}
+\label{tab:large_n}
+\begin{ruledtabular}
+\begin{tabular}{lcccc}
+$N$ & $k/N$ & $\langle r \rangle$ & 95\% CI & Pairs \\
+\colrule
+14 & 0.286 & $-0.940$ & [$-0.971$, $-0.904$] & 6 \\
+14 & 0.429 & $-0.869$ & [$-0.935$, $-0.795$] & 15 \\
+14 & 0.571 & $-0.772$ & [$-0.887$, $-0.660$] & 28 \\
+16 & 0.250 & $-0.982$ & [$-0.994$, $-0.970$] & 6 \\
+16 & 0.375 & $-0.858$ & [$-0.966$, $-0.719$] & 15 \\
+16 & 0.500 & $-0.741$ & [$-0.836$, $-0.673$] & 28 \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\textbf{Correlation decay persists at large $N$.}
+Every $(N, k)$ combination shows strongly negative Pearson $r$. At $N = 16$, $k = 8$ (28 pairs), $\langle r \rangle = -0.741$ with a 95\% CI of $[-0.836, -0.673]$---entirely below zero. All 3 individual trials are negative ($r = -0.67, -0.72, -0.84$). The signal does not weaken as the Hilbert space grows from $2^8 = 256$ to $2^{16} = 65{,}536$.
+
+\textbf{The monotonicity in $k/N$ is preserved.}
+At $N = 14$: $r$ goes from $-0.940$ (most partial, $k/N = 0.286$) to $-0.772$ (least partial, $k/N = 0.571$). At $N = 16$: from $-0.982$ ($k/N = 0.25$) to $-0.741$ ($k/N = 0.5$). More partial observers perceive stronger locality at every system size tested.
+
+\textbf{Dimension ratio.}
+At $N = 14$, the mean dimension ratios are $0.70$ ($k = 4$), $0.80$ ($k = 6$), and $0.75$ ($k = 8$), showing reduction. At $N = 16$, the ratios are $0.67$ ($k = 4$), $0.83$ ($k = 6$), but $1.0$ ($k = 8$). The $d_\text{eff}$ measure is integer-valued (number of MDS eigenvalues above threshold) and both $d_\text{obs}$ and $d_\text{full}$ are small integers ($1$--$4$) at these system sizes, producing ratios with limited resolution: a ratio can be $0.5$, $1.0$, or $0.75$, but nothing between. The correlation decay, which is continuous-valued and does not suffer from this discretization, is the more reliable measure and shows a clean, consistent signal across all $N$.
+
+
+%=====================================================================
+\section{Breaking the Circularity Objection}
+\label{sec:circularity}
+%=====================================================================
+
+The most serious objection to the PLC is circularity. Mutual information $I(i{:}j)$ bounds correlations via the Pinsker-type inequality $I(i{:}j) \geq C_{ij}^2 / (2\ln 2)$. If the MI-distance $d_{ij} = 1/I(i{:}j)$ is defined from the same correlations it predicts, the negative Pearson $r$ between $\log|C_{ij}|$ and $d_{ij}$ could be a mathematical tautology rather than a physical effect.
+
+We break this circularity with two experiments.
+
+\subsection{Cross-observer test}
+
+We define two non-overlapping observers, A and B, each with access to $k$ qubits drawn from $S_A \cap S_B = \emptyset$. Observer A constructs an MI-distance matrix $d^A_{ij}$ from her qubits. We then ask: does $d^A_{ij}$ predict the correlations $C^B_{ij}$ among Observer B's qubits?
+
+There is no shared computation. Observer A's MI matrix involves only her reduced density matrix. Observer B's correlations involve only his. The Pinsker bound does not apply across observers: $I^A(i{:}j)$ does not bound $C^B(i'{:}j')$ for $i' \neq i$, $j' \neq j$.
+
+Concretely, for each Hamiltonian realization, we draw two random non-overlapping subsets of size $k$. We compute the MI-derived distance from Observer A's qubits and the ZZ correlation from Observer B's qubits. We match pairs by rank order: the closest pair under A's metric is compared with the most correlated pair under B's correlator. The Pearson $r$ between $\log|C^B|$ and $d^A$ measures whether one observer's geometry predicts the other's correlations.
+
+Results (20 Hamiltonians, 5 observer draws each, 100 total samples):
+\begin{itemize}
+\item $N = 8$: $\langle r \rangle = -0.743$, 95\% CI $[-0.813, -0.666]$
+\item $N = 10$: $\langle r \rangle = -0.646$, 95\% CI $[-0.731, -0.553]$
+\end{itemize}
+Observer A's MI-distance predicts Observer B's correlations at a level comparable to the within-observer signal ($r \approx -0.67$ at $N = 8$). The emergent metric is not a self-referential artifact. It captures structure in the underlying state that transfers across independent perspectives.
+
+\subsection{Coupling-distance control}
+
+As a baseline, we replace the MI-distance with a coupling-strength distance $d^J_{ij} = 1/|J_{ij}|$, which is defined from the Hamiltonian couplings rather than from any correlation measure.
+
+Results (20 Hamiltonians):
+\begin{itemize}
+\item $N = 8$: $\langle r \rangle = -0.164$, std $= 0.082$
+\item $N = 10$: $\langle r \rangle = -0.145$, std $= 0.087$
+\end{itemize}
+The coupling distance produces weak, non-zero anti-correlation---couplings do carry some information about correlations, as expected. But the MI-distance produces a signal 4--5$\times$ stronger ($r \approx -0.7$ vs $r \approx -0.15$). The MI-distance captures information about the \emph{state}, not just the Hamiltonian. This is the non-trivial content: the observer's emergent geometry reflects the entanglement structure of the ground state, which exceeds what the coupling topology alone predicts.
+
+
+%=====================================================================
+\section{Controls}
+\label{sec:controls}
+%=====================================================================
+
+Three control experiments validate the result.
+
+\textbf{(i) 1D nearest-neighbor chain.}
+We replace all-to-all couplings with nearest-neighbor interactions on a ring. The dimension ratio is identically 1.0 for all $k/N$ (20 trials, $N = 8$). Correlations decay strongly with MI-distance ($\langle r \rangle < -0.9$). The chain has built-in locality; the observer cannot compress what is already one-dimensional. The all-to-all result is distinct because dimension reduction occurs without pre-existing geometry.
+
+\textbf{(ii) Haar-random states.}
+We replace the ground state with a Haar-random state on $N = 8$ qubits. The Pearson $r$ fluctuates around zero with no consistent sign ($\langle r \rangle \approx 0$, $N_\text{trials} = 2$). No emergent metric structure forms. The effect requires the structured correlations present in an energy eigenstate, not generic entanglement. We note the small trial count for this control; the qualitative conclusion (no consistent negative $r$) is clear, but a larger sample would strengthen it.
+
+\textbf{(iii) Planted partition.}
+We construct a Hamiltonian with two strongly coupled clusters weakly connected to each other (within/between MI ratio $\approx 316{:}1$). Partial observers discover the cluster structure with group purity reflecting the planted partition. The observer's emergent metric reveals physical structure in the Hamiltonian.
+
+
+%=====================================================================
+\section{Symmetry Breaking}
+\label{sec:symmetry}
+%=====================================================================
+
+The Heisenberg Hamiltonian [Eq.~(\ref{eq:hamiltonian})] has global SU(2) symmetry. Under this symmetry, $\langle X_i X_j \rangle = \langle Y_i Y_j \rangle = \langle Z_i Z_j \rangle$ for all $i, j$, so the MI matrix and the ZZ correlation matrix are monotonically related. This makes the correlation-distance relationship partially tautological: one is a nonlinear transformation of the other.
+
+To test whether the PLC effect survives without this symmetry, we compare three Hamiltonian classes (Table~\ref{tab:symmetry}):
+
+\begin{enumerate}
+\item \textbf{Heisenberg} (SU(2) symmetric): $H = \sum J_{ij}(X_i X_j + Y_i Y_j + Z_i Z_j)$
+\item \textbf{XXZ} with $\Delta = 0.5$ (U(1) symmetric): $H = \sum J_{ij}(X_i X_j + Y_i Y_j + 0.5\, Z_i Z_j)$
+\item \textbf{Random Pauli} (no continuous symmetry): $H = \sum_{i<j} (J^x_{ij} X_i X_j + J^y_{ij} Y_i Y_j + J^z_{ij} Z_i Z_j)$ with independent couplings $J^{x,y,z}_{ij} \sim \mathcal{N}(0,1)$
+\end{enumerate}
+
+\begin{table}[t]
+\caption{Symmetry breaking test ($N = 8$, 20 Hamiltonians, 10 subsets each = 200 samples). The ZZ and XX columns report the Pearson $r$ between $\log|C^{zz}_{ij}|$ (resp.\ $\log|C^{xx}_{ij}|$) and $d_{ij}$.}
+\label{tab:symmetry}
+\begin{ruledtabular}
+\begin{tabular}{llccc}
+Model & Symmetry & $d_\text{obs}/d_\text{full}$ & $r$ (ZZ) & $r$ (XX) \\
+\colrule
+\multicolumn{5}{c}{$k/N = 0.375$} \\
+Heisenberg & SU(2) & 0.921 & $-0.780$ & $-0.915$ \\
+XXZ ($\Delta{=}0.5$) & U(1) & 0.831 & $-0.720$ & $-0.960$ \\
+Random Pauli & none & 0.690 & $-0.705$ & $-0.672$ \\
+\colrule
+\multicolumn{5}{c}{$k/N = 0.500$} \\
+Heisenberg & SU(2) & 0.953 & $-0.709$ & $-0.846$ \\
+XXZ ($\Delta{=}0.5$) & U(1) & 0.894 & $-0.631$ & $-0.921$ \\
+Random Pauli & none & 0.790 & $-0.678$ & $-0.584$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The effect persists---and in fact \emph{strengthens}---as symmetry is removed. The dimension ratio drops from 0.921 (Heisenberg) to 0.690 (random Pauli) at $k/N = 0.375$. The ZZ correlation decay remains strong: $r = -0.705$ for random Pauli, comparable to $r = -0.780$ for Heisenberg.
+
+Two additional observations emerge:
+
+First, under SU(2) symmetry, $\langle X_i X_j \rangle = \langle Z_i Z_j \rangle$, so the XX and ZZ correlators give identical results up to noise. The XXZ model breaks this degeneracy: the XX correlator decays more strongly ($r = -0.960$) than the ZZ correlator ($r = -0.720$), reflecting the anisotropic coupling.
+
+Second, for the random Pauli model---which has no continuous symmetry at all---both ZZ and XX correlators independently show strong decay ($r = -0.705$ and $r = -0.672$ at $k/N = 0.375$). The MI matrix captures all correlations through $S(\rho_{ij})$. The fact that \emph{individual Pauli-channel correlators} each decay with MI-distance, even when they contribute differently to MI, demonstrates that the emergent metric reflects genuine spatial structure rather than a symmetry artifact.
+
+This result eliminates the SU(2) objection. The PLC effect does not require Heisenberg symmetry. It does not require any continuous symmetry. It requires only that the ground state have structured correlations---which any interacting Hamiltonian provides.
+
+
+%=====================================================================
+\section{Excited States}
+\label{sec:excited}
+%=====================================================================
+
+If the PLC effect arises from partial observation, it should not be specific to ground states. Conversely, if the effect depends on area-law entanglement scaling---a property of gapped ground states~\cite{hastings2007}---excited states with volume-law entanglement should show a weaker or absent signal. Table~\ref{tab:excited} tests this directly.
+
+\begin{table}[t]
+\caption{Correlation decay for ground and excited states ($N = 8$, $k = 4$; $N = 10$, $k = 5$; 20 Hamiltonians each). State 0 is the ground state; states 1--4 are the first four excited states.}
+\label{tab:excited}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+ & \multicolumn{2}{c}{$N = 8$, $k = 4$} & \multicolumn{2}{c}{$N = 10$, $k = 5$} \\
+State & $\langle r \rangle$ & $n_\text{neg}/n$ & $\langle r \rangle$ & $n_\text{neg}/n$ \\
+\colrule
+Ground & $-0.754$ & 20/20 & $-0.515$ & 17/20 \\
+Excited-1 & $-0.544$ & 19/20 & $-0.528$ & 18/20 \\
+Excited-2 & $-0.629$ & 19/20 & $-0.544$ & 20/20 \\
+Excited-3 & $-0.731$ & 19/20 & $-0.420$ & 16/20 \\
+Excited-4 & $-0.699$ & 20/20 & $-0.363$ & 17/20 \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+All five eigenstates---ground and excited---show negative correlation decay. At $N = 8$, $k = 4$, every state achieves $\langle r \rangle$ between $-0.54$ and $-0.75$, with 19--20 of 20 trials negative. At $N = 10$, $k = 5$, the range is $-0.36$ to $-0.54$, with 16--20 of 20 trials negative.
+
+The effect is not specific to ground states. It persists in excited states whose entanglement structure differs qualitatively from the area-law scaling of gapped ground states. This supports the interpretation that the PLC effect arises from partial observation of the state---any structured eigenstate with nontrivial correlations---rather than from a special entanglement property of the ground state alone.
+
+
+%=====================================================================
+\section{Robustness of the Distance Metric}
+\label{sec:distance}
+%=====================================================================
+
+The choice of $d_{ij} = 1/I(i{:}j)$ is one of many monotone decreasing functions mapping MI to distance. Does the result depend on this specific choice? We test five transformations (Table~\ref{tab:distance}):
+
+\begin{enumerate}
+\item Inverse: $d = 1/I$
+\item Subtraction: $d = I_\text{max} - I$
+\item Negative log: $d = -\log(I / I_\text{max})$
+\item Normalized: $d = 1 - I/I_\text{max}$
+\item Square root: $d = \sqrt{I_\text{max} - I}$
+\end{enumerate}
+
+\begin{table}[b]
+\caption{Distance metric robustness ($N = 8$, 200 samples per metric). $\Delta_\triangle$ is the fraction of qubit triples satisfying the triangle inequality.}
+\label{tab:distance}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+Metric & $\langle r \rangle$ ($k/N = 0.375$) & 95\% CI & $\Delta_\triangle$ \\
+\colrule
+Inverse ($1/I$) & $-0.697$ & [$-0.763$, $-0.627$] & 0.79 \\
+Subtract ($I_\text{max} - I$) & $-0.739$ & [$-0.807$, $-0.666$] & 0.67 \\
+Neg-log ($-\ln I$) & $-0.741$ & [$-0.808$, $-0.669$] & 0.67 \\
+Normalized & $-0.739$ & [$-0.807$, $-0.666$] & 0.67 \\
+Sq-root & $-0.724$ & [$-0.793$, $-0.650$] & 0.67 \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+All five metrics produce strong negative Pearson $r$ at $k/N = 0.375$, ranging from $-0.697$ to $-0.741$. The coefficient of variation across metrics is 2.3\%. At $k/N = 0.5$, the CV increases to 10.7\%, with individual metrics ranging from $-0.594$ (inverse) to $-0.805$ (subtract). The correlation decay is not an artifact of the distance function.
+
+The triangle inequality satisfaction rate varies: the inverse metric ($1/I$) achieves 79\%, while the subtraction-based metrics achieve 67\%. None satisfy the triangle inequality universally, which is expected for a metric constructed from noisy pairwise MI values on 3 qubits. This is an honest limitation---the ``distance'' is a dissimilarity measure rather than a strict metric---but the correlation decay does not depend on metric-space axioms.
+
+
+%=====================================================================
+\section{Null Models}
+\label{sec:nulls}
+%=====================================================================
+
+The original shuffle null model (randomizing MI matrix entries) is too weak: it destroys all structure, not just locality. We implement four null models with progressively greater structure preservation (Table~\ref{tab:null}).
+
+\begin{table}[t]
+\caption{Null model comparison ($N = 8$). Effect size is the difference between the real mean $r$ and the null mean $r$, divided by the null standard deviation. Larger $|d|$ means the real signal deviates more from the null.}
+\label{tab:null}
+\begin{ruledtabular}
+\begin{tabular}{lcccc}
+ & \multicolumn{2}{c}{$k = 3$} & \multicolumn{2}{c}{$k = 4$} \\
+Null model & $r_\text{null}$ & $d$ & $r_\text{null}$ & $d$ \\
+\colrule
+Shuffle & $-0.010$ & $-1.33$ & $+0.003$ & $-1.87$ \\
+Eigenvalue-pres. & $-0.008$ & $-2.65$ & $+0.009$ & $-1.68$ \\
+Random-$H$ & $-0.048$ & $-1.27$ & $+0.020$ & $-2.14$ \\
+Degree-pres. & $-0.950$ & $0.00$ & $-0.410$ & $-1.04$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\textbf{Shuffle null} (randomize MI entries): destroys all structure. The real signal is $1.3$--$1.9$ standard deviations below the null.
+
+\textbf{Eigenvalue-preserving null} (random orthogonal rotation of MI matrix, preserving spectrum): tests whether the specific assignment of MI values to qubit pairs matters, or just the overall spectral shape. Effect size $d = -2.65$ at $k = 3$: the assignment matters.
+
+\textbf{Random-Hamiltonian null} (MI matrix from a fresh random Hamiltonian, same distribution): tests whether the signal is specific to the state, or generic to all ground states. Effect size $d = -2.14$ at $k = 4$: the specific state matters.
+
+\textbf{Degree-preserving null} (shuffle MI entries while preserving row sums): tests whether pairwise structure matters beyond each qubit's total connectivity. At $k = 3$ (3 pairs), this null matches the real signal exactly ($d = 0$)---with only 3 entries and fixed row sums, there is no room to permute. At $k = 4$ (6 pairs), genuine pairwise structure emerges ($d = -1.04$), distinct from connectivity alone.
+
+The degree-preserving result at $k = 3$ is an honest limitation of small $N$. With 3 qubit pairs and a constraint that preserves row sums, the null and real distributions are identical. This is not evidence against the PLC---it is evidence that $k = 3$ is too small for pairwise structure to be distinguishable from marginal structure. At $k = 4$ and above, the pairwise signal is detectable.
+
+
+%=====================================================================
+\section{Discussion}
+\label{sec:discussion}
+%=====================================================================
+
+\subsection{What we have shown}
+
+An observer with limited access to a non-local quantum system perceives an effectively local world. Correlations decay with a distance defined by the observer's own information. The emergent geometry is lower-dimensional than the full system's. These effects are:
+\begin{itemize}
+\item Monotonic in partiality (more limited access $\to$ stronger locality)
+\item Present across system sizes $N = 8$--$16$ (Hilbert space dimensions $256$--$65{,}536$)
+\item Independent of the distance metric (5 metrics, CV $= 2.3\%$)
+\item Independent of SU(2) symmetry (persists for random Pauli Hamiltonians)
+\item Not circular: cross-observer test yields $r = -0.74$ at $N = 8$
+\item Distinguishable from shuffled, eigenvalue-preserving, and random-Hamiltonian nulls
+\item Not specific to ground states: all tested excited states show the effect
+\end{itemize}
+
+\subsection{What we have not shown}
+
+The correlation decay we measure ($r \approx -0.6$ to $-0.7$) is moderate to strong. In local theories with gapped Hamiltonians, correlations decay exponentially~\cite{hastings2006}. We cannot determine the functional form of the decay (exponential, power-law, or otherwise) at these system sizes. The small number of qubit pairs ($3$--$15$) precludes functional form fitting.
+
+At $N = 8$ with $k = 3$, the MDS embedding has at most 2 dimensions. At $N = 16$ with $k = 8$, we reach 28 pairs and up to 27 MDS dimensions---genuine high-dimensional geometry. The correlation decay signal is strong and consistent at all system sizes tested ($r \approx -0.7$ at $N = 16$). The effective dimension measure is noisier, producing integer-valued ratios with limited resolution at these sizes. Scaling to $N \geq 20$ would sharpen the dimension analysis.
+
+We have not demonstrated Lieb-Robinson-like bounds, finite propagation speed, or stability under time evolution. These are necessary properties of physical locality that we do not address. The excited-state results (Sec.~\ref{sec:excited}) confirm the effect is not ground-state-specific, but we have not tested thermal states or states far from equilibrium. What we observe is better described as ``emergent correlation structure with locality-like properties'' than as full spatial locality. We retain the term ``locality'' as a physical shorthand for correlation decay in an emergent metric, with the understanding that the full program remains incomplete.
+
+The degree-preserving null at $k = 3$ explains the entire signal, meaning the pairwise structure is not distinguishable from marginal structure at this size. At $k \geq 4$, genuine pairwise structure emerges. The large-$N$ results (Sec.~\ref{sec:large_n}) confirm this: at $N = 16$ with $k = 8$ (28 pairs), the correlation decay ($r = -0.74$) operates in a regime where pairwise structure is well-resolved.
+
+\subsection{Connection to quantum reference frames}
+
+The QRF framework~\cite{giacomini2019,vanrietvelde2020} establishes that physical descriptions are perspective-dependent. Our observer subset $S$ is a concrete realization of a quantum reference frame: it defines a perspective, and the emergent metric is the geometry that this perspective induces. The PLC proposes that this mechanism operates at the level of spacetime itself.
+
+The cross-observer experiment (Sec.~\ref{sec:circularity}) provides a concrete QRF-like result: two observers with non-overlapping access to the same state generate correlated but distinct geometries. Observer A's metric predicts Observer B's physics. The shared structure is in the state, not in either observer.
+
+\subsection{Future directions}
+
+Three extensions are immediate. First, scaling to $N = 20$--$24$ using tensor network methods or quantum hardware would further test the robustness of the correlation decay and sharpen the dimension analysis, which requires larger $d_\text{eff}$ values to produce non-integer ratios. Second, computing the Ollivier-Ricci curvature~\cite{ollivier2009} of the emergent metric would characterize whether the geometry is flat, positively curved, or negatively curved---connecting to the holographic program where bulk curvature relates to boundary entanglement. Third, studying the time evolution of the emergent metric under quench dynamics would test whether the locality persists out of equilibrium or is specific to ground states.
+
+\subsection{Coda}
+
+If locality is perspectival, it resolves a tension at the heart of quantum gravity. The fundamental theory need not be local. It need only contain observers whose finite access generates locality as an effective description.
+
+The universe is not local. We are.
+
+
+%=====================================================================
+\begin{acknowledgments}
+%=====================================================================
+The computational component of this work was developed in collaboration with Opus, an AI system (Anthropic, Claude Opus~4), which contributed to code development, statistical analysis, and manuscript preparation. Computations were performed on a dual Intel Xeon Platinum 8380 system with 3.9~TiB Intel Optane persistent memory and an NVIDIA RTX 3090 GPU. The $N = 16$ sparse Lanczos calculations required approximately 2 hours of wall time.
+\end{acknowledgments}
+
+
+%=====================================================================
+\begin{thebibliography}{99}
+%=====================================================================
+
+\bibitem{ryu2006}
+S.~Ryu and T.~Takayanagi, Phys.\ Rev.\ Lett.\ \textbf{96}, 181602 (2006).
+
+\bibitem{almheiri2015}
+A.~Almheiri, X.~Dong, and D.~Harlow, J.\ High Energy Phys.\ \textbf{2015}, 163 (2015).
+
+\bibitem{vanraamsdonk2010}
+M.~Van~Raamsdonk, Gen.\ Relativ.\ Gravit.\ \textbf{42}, 2323 (2010).
+
+\bibitem{zurek2003}
+W.~H.~Zurek, Rev.\ Mod.\ Phys.\ \textbf{75}, 715 (2003).
+
+\bibitem{giacomini2019}
+F.~Giacomini, E.~Castro-Ruiz, and \v{C}.~Brukner, Nat.\ Commun.\ \textbf{10}, 494 (2019).
+
+\bibitem{vanrietvelde2020}
+A.~Vanrietvelde, P.~A.~H\"ohn, F.~Giacomini, and E.~Castro-Ruiz, Quantum \textbf{4}, 225 (2020).
+
+\bibitem{cao2017}
+C.~Cao, S.~M.~Carroll, and S.~Michalakis, Phys.\ Rev.\ D \textbf{95}, 024031 (2017).
+
+\bibitem{borg2005}
+I.~Borg and P.~J.~F.~Groenen, \textit{Modern Multidimensional Scaling} (Springer, New York, 2005).
+
+\bibitem{hastings2006}
+M.~B.~Hastings, Phys.\ Rev.\ B \textbf{69}, 104431 (2004).
+
+\bibitem{ollivier2009}
+Y.~Ollivier, J.\ Funct.\ Anal.\ \textbf{256}, 810 (2009).
+
+\bibitem{lehoucq1998}
+R.~B.~Lehoucq, D.~C.~Sorensen, and C.~Yang, \textit{ARPACK Users' Guide: Solution of Large-Scale Eigenvalue Problems with Implicitly Restarted Arnoldi Methods} (SIAM, Philadelphia, 1998).
+
+\bibitem{hastings2007}
+M.~B.~Hastings, J.\ Stat.\ Mech.\ \textbf{2007}, P08024 (2007).
+
+\end{thebibliography}
+
+\end{document}

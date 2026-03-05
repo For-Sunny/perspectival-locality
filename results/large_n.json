@@ -1,0 +1,524 @@
+{
+  "experiment": "large_n_sparse_lanczos",
+  "date": "2026-03-05",
+  "description": "N=14 and N=16 PLC experiments using sparse eigensolver. For N=16, dim_full is computed from k=10 proxy (45 pairs) to avoid computing all 120 pairs.",
+  "all_results": [
+    {
+      "N": 14,
+      "k": 4,
+      "k_over_N": 0.2857,
+      "n_observer_pairs": 6,
+      "trial": 0,
+      "seed": 6400,
+      "E0": -43.894453876756955,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.9505816550075855,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 14,
+      "k": 6,
+      "k_over_N": 0.4286,
+      "n_observer_pairs": 15,
+      "trial": 0,
+      "seed": 6400,
+      "E0": -43.894453876756955,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.8399366228106718,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 14,
+      "k": 8,
+      "k_over_N": 0.5714,
+      "n_observer_pairs": 28,
+      "trial": 0,
+      "seed": 6400,
+      "E0": -43.894453876756955,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.8381577809333486,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 14,
+      "k": 4,
+      "k_over_N": 0.2857,
+      "n_observer_pairs": 6,
+      "trial": 1,
+      "seed": 6401,
+      "E0": -41.99911255365349,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.8722229744255193,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 14,
+      "k": 6,
+      "k_over_N": 0.4286,
+      "n_observer_pairs": 15,
+      "trial": 1,
+      "seed": 6401,
+      "E0": -41.99911255365349,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.8587021034045497,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 14,
+      "k": 8,
+      "k_over_N": 0.5714,
+      "n_observer_pairs": 28,
+      "trial": 1,
+      "seed": 6401,
+      "E0": -41.99911255365349,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.8258237340904961,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 14,
+      "k": 4,
+      "k_over_N": 0.2857,
+      "n_observer_pairs": 6,
+      "trial": 2,
+      "seed": 6402,
+      "E0": -42.71179268558528,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.9576513181497898,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 14,
+      "k": 6,
+      "k_over_N": 0.4286,
+      "n_observer_pairs": 15,
+      "trial": 2,
+      "seed": 6402,
+      "E0": -42.71179268558528,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.9264248855898336,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 14,
+      "k": 8,
+      "k_over_N": 0.5714,
+      "n_observer_pairs": 28,
+      "trial": 2,
+      "seed": 6402,
+      "E0": -42.71179268558528,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.6365913715901588,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 14,
+      "k": 4,
+      "k_over_N": 0.2857,
+      "n_observer_pairs": 6,
+      "trial": 3,
+      "seed": 6403,
+      "E0": -51.901589188979855,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.930787846623132,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 14,
+      "k": 6,
+      "k_over_N": 0.4286,
+      "n_observer_pairs": 15,
+      "trial": 3,
+      "seed": 6403,
+      "E0": -51.901589188979855,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.7362804040956712,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 14,
+      "k": 8,
+      "k_over_N": 0.5714,
+      "n_observer_pairs": 28,
+      "trial": 3,
+      "seed": 6403,
+      "E0": -51.901589188979855,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.6002783651826373,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 14,
+      "k": 4,
+      "k_over_N": 0.2857,
+      "n_observer_pairs": 6,
+      "trial": 4,
+      "seed": 6404,
+      "E0": -57.42575980595164,
+      "dim_full": 4.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.9907381904479268,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 14,
+      "k": 6,
+      "k_over_N": 0.4286,
+      "n_observer_pairs": 15,
+      "trial": 4,
+      "seed": 6404,
+      "E0": -57.42575980595164,
+      "dim_full": 4.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.9827366424239757,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 14,
+      "k": 8,
+      "k_over_N": 0.5714,
+      "n_observer_pairs": 28,
+      "trial": 4,
+      "seed": 6404,
+      "E0": -57.42575980595164,
+      "dim_full": 4.0,
+      "dim_observer": 3.0,
+      "dim_ratio": 0.75,
+      "r_pearson": -0.9615058702618268,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 16,
+      "k": 4,
+      "k_over_N": 0.25,
+      "n_observer_pairs": 6,
+      "trial": 0,
+      "seed": 7600,
+      "E0": -57.96511670228966,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.9936134831526824,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 16,
+      "k": 6,
+      "k_over_N": 0.375,
+      "n_observer_pairs": 15,
+      "trial": 0,
+      "seed": 7600,
+      "E0": -57.96511670228966,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.8874340775270294,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 16,
+      "k": 8,
+      "k_over_N": 0.5,
+      "n_observer_pairs": 28,
+      "trial": 0,
+      "seed": 7600,
+      "E0": -57.96511670228966,
+      "dim_full": 1.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.6729278843618594,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 16,
+      "k": 4,
+      "k_over_N": 0.25,
+      "n_observer_pairs": 6,
+      "trial": 1,
+      "seed": 7601,
+      "E0": -61.91067428449371,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.9702690660908596,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 16,
+      "k": 6,
+      "k_over_N": 0.375,
+      "n_observer_pairs": 15,
+      "trial": 1,
+      "seed": 7601,
+      "E0": -61.91067428449371,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.7193358960806407,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 16,
+      "k": 8,
+      "k_over_N": 0.5,
+      "n_observer_pairs": 28,
+      "trial": 1,
+      "seed": 7601,
+      "E0": -61.91067428449371,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.7150985818427255,
+      "max_mds_dims": 27
+    },
+    {
+      "N": 16,
+      "k": 4,
+      "k_over_N": 0.25,
+      "n_observer_pairs": 6,
+      "trial": 2,
+      "seed": 7602,
+      "E0": -58.36125036437546,
+      "dim_full": 2.0,
+      "dim_observer": 1.0,
+      "dim_ratio": 0.5,
+      "r_pearson": -0.9810548697058178,
+      "max_mds_dims": 5
+    },
+    {
+      "N": 16,
+      "k": 6,
+      "k_over_N": 0.375,
+      "n_observer_pairs": 15,
+      "trial": 2,
+      "seed": 7602,
+      "E0": -58.36125036437546,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.9663732460941369,
+      "max_mds_dims": 14
+    },
+    {
+      "N": 16,
+      "k": 8,
+      "k_over_N": 0.5,
+      "n_observer_pairs": 28,
+      "trial": 2,
+      "seed": 7602,
+      "E0": -58.36125036437546,
+      "dim_full": 2.0,
+      "dim_observer": 2.0,
+      "dim_ratio": 1.0,
+      "r_pearson": -0.8359817127975373,
+      "max_mds_dims": 27
+    }
+  ],
+  "summary": {
+    "N=14": {
+      "k=4": {
+        "k": 4,
+        "k_over_N": 0.2857,
+        "n_pairs": 6,
+        "max_mds_dims": 5,
+        "dim_ratio_mean": 0.7,
+        "dim_ratio_ci95": [
+          0.5,
+          0.9
+        ],
+        "r_pearson_mean": -0.9403963969307908,
+        "r_pearson_ci95": [
+          -0.9707168145948994,
+          -0.9035664466583458
+        ],
+        "n_trials": 5,
+        "individual_dim_ratios": [
+          0.5,
+          0.5,
+          1.0,
+          1.0,
+          0.5
+        ],
+        "individual_r_pearsons": [
+          -0.9505816550075855,
+          -0.8722229744255193,
+          -0.9576513181497898,
+          -0.930787846623132,
+          -0.9907381904479268
+        ]
+      },
+      "k=6": {
+        "k": 6,
+        "k_over_N": 0.4286,
+        "n_pairs": 15,
+        "max_mds_dims": 14,
+        "dim_ratio_mean": 0.8,
+        "dim_ratio_ci95": [
+          0.6,
+          1.0
+        ],
+        "r_pearson_mean": -0.8688161316649404,
+        "r_pearson_ci95": [
+          -0.9354050318864335,
+          -0.7950405441375038
+        ],
+        "n_trials": 5,
+        "individual_dim_ratios": [
+          0.5,
+          1.0,
+          1.0,
+          1.0,
+          0.5
+        ],
+        "individual_r_pearsons": [
+          -0.8399366228106718,
+          -0.8587021034045497,
+          -0.9264248855898336,
+          -0.7362804040956712,
+          -0.9827366424239757
+        ]
+      },
+      "k=8": {
+        "k": 8,
+        "k_over_N": 0.5714,
+        "n_pairs": 28,
+        "max_mds_dims": 27,
+        "dim_ratio_mean": 0.75,
+        "dim_ratio_ci95": [
+          0.55,
+          0.95
+        ],
+        "r_pearson_mean": -0.7724714244116935,
+        "r_pearson_ci95": [
+          -0.8874970166647399,
+          -0.6599126415272176
+        ],
+        "n_trials": 5,
+        "individual_dim_ratios": [
+          0.5,
+          1.0,
+          0.5,
+          1.0,
+          0.75
+        ],
+        "individual_r_pearsons": [
+          -0.8381577809333486,
+          -0.8258237340904961,
+          -0.6365913715901588,
+          -0.6002783651826373,
+          -0.9615058702618268
+        ]
+      }
+    },
+    "N=16": {
+      "k=4": {
+        "k": 4,
+        "k_over_N": 0.25,
+        "n_pairs": 6,
+        "max_mds_dims": 5,
+        "dim_ratio_mean": 0.6666666666666666,
+        "dim_ratio_ci95": [
+          0.5,
+          1.0
+        ],
+        "r_pearson_mean": -0.9816458063164534,
+        "r_pearson_ci95": [
+          -0.9936134831526825,
+          -0.9702690660908596
+        ],
+        "n_trials": 3,
+        "individual_dim_ratios": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "individual_r_pearsons": [
+          -0.9936134831526824,
+          -0.9702690660908596,
+          -0.9810548697058178
+        ]
+      },
+      "k=6": {
+        "k": 6,
+        "k_over_N": 0.375,
+        "n_pairs": 15,
+        "max_mds_dims": 14,
+        "dim_ratio_mean": 0.8333333333333334,
+        "dim_ratio_ci95": [
+          0.5,
+          1.0
+        ],
+        "r_pearson_mean": -0.8577144065672689,
+        "r_pearson_ci95": [
+          -0.9663732460941369,
+          -0.7193358960806407
+        ],
+        "n_trials": 3,
+        "individual_dim_ratios": [
+          1.0,
+          0.5,
+          1.0
+        ],
+        "individual_r_pearsons": [
+          -0.8874340775270294,
+          -0.7193358960806407,
+          -0.9663732460941369
+        ]
+      },
+      "k=8": {
+        "k": 8,
+        "k_over_N": 0.5,
+        "n_pairs": 28,
+        "max_mds_dims": 27,
+        "dim_ratio_mean": 1.0,
+        "dim_ratio_ci95": [
+          1.0,
+          1.0
+        ],
+        "r_pearson_mean": -0.741336059667374,
+        "r_pearson_ci95": [
+          -0.8359817127975373,
+          -0.6729278843618594
+        ],
+        "n_trials": 3,
+        "individual_dim_ratios": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "individual_r_pearsons": [
+          -0.6729278843618594,
+          -0.7150985818427255,
+          -0.8359817127975373
+        ]
+      }
+    }
+  },
+  "total_elapsed_seconds": 7387.382355928421
+}
