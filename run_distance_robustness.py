@@ -223,8 +223,9 @@ def run_distance_robustness(N=8, n_trials=20, k_over_N_values=(0.375, 0.5), use_
             r_arr = np.array(d["pearson_r"])
             tri_arr = np.array(d["triangle_ineq_rate"])
 
-            dim_ci = bootstrap_ci(dim_arr, n_bootstrap=5000, seed=42)
-            r_ci = bootstrap_ci(r_arr, n_bootstrap=5000, seed=43)
+            ci_seed = hash((metric_name, k)) % (2**31)
+            dim_ci = bootstrap_ci(dim_arr, n_bootstrap=5000, seed=ci_seed)
+            r_ci = bootstrap_ci(r_arr, n_bootstrap=5000, seed=ci_seed + 1)
 
             results[metric_name][str(k_over_N)] = {
                 "dim_ratio": {

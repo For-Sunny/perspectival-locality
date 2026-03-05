@@ -233,7 +233,7 @@ def main():
         n_trials=10,
         k_over_N_list=[0.375, 0.5],
         n_shuffles_fast=200,
-        n_shuffles_hamiltonian=20,
+        n_shuffles_hamiltonian=100,
         use_gpu=True,
         seed_base=42000,
     )
@@ -247,7 +247,7 @@ def main():
             "n_trials": 10,
             "k_over_N_list": [0.375, 0.5],
             "n_shuffles_fast": 200,
-            "n_shuffles_hamiltonian": 20,
+            "n_shuffles_hamiltonian": 100,
             "total_time_seconds": elapsed,
         },
         "results": {},

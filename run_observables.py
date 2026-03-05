@@ -23,8 +23,8 @@ from src.observables import (
     analyze_results,
     print_analysis,
     _save_result,
-    _json_default,
 )
+from src.utils import NumpyEncoder
 
 RESULTS_DIR = Path(__file__).parent / "results"
 
@@ -280,7 +280,7 @@ def main():
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(RESULTS_DIR / "observables.json", 'w') as f:
-        json.dump(save_data, f, indent=2, default=_json_default)
+        json.dump(save_data, f, indent=2, cls=NumpyEncoder)
 
     print(f"\n  Results saved to results/observables.json")
     print(f"  Done.\n")

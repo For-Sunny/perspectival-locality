@@ -40,13 +40,13 @@ RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _bootstrap_ci(data, n_bootstrap=1000, ci=0.95):
+def _bootstrap_ci(data, n_bootstrap=1000, ci=0.95, seed=42):
     """Thin wrapper around src.statistics.bootstrap_ci returning (mean, lo, hi) tuple."""
     values = np.array([v for v in data if np.isfinite(v)])
     if len(values) < 2:
         m = float(np.mean(values)) if len(values) > 0 else 0.0
         return m, m, m
-    result = _stats_bootstrap_ci(values, n_bootstrap=n_bootstrap, ci=ci, seed=42)
+    result = _stats_bootstrap_ci(values, n_bootstrap=n_bootstrap, ci=ci, seed=seed)
     return result["estimate"], result["ci_low"], result["ci_high"]
 
 
@@ -201,8 +201,9 @@ def main():
             dim_ratios = [r['dim_ratio'] for r in k_results]
             r_pearsons = [r['r_pearson'] for r in k_results]
 
-            dr_mean, dr_lo, dr_hi = _bootstrap_ci(dim_ratios)
-            rp_mean, rp_lo, rp_hi = _bootstrap_ci(r_pearsons)
+            ci_seed = N_val * 1000 + k
+            dr_mean, dr_lo, dr_hi = _bootstrap_ci(dim_ratios, seed=ci_seed)
+            rp_mean, rp_lo, rp_hi = _bootstrap_ci(r_pearsons, seed=ci_seed + 1)
 
             n_pairs = k * (k - 1) // 2
             max_dims = n_pairs - 1

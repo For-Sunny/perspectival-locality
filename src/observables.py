@@ -28,17 +28,6 @@ from .utils import NumpyEncoder
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 
 
-# Keep _json_default as a module-level function for external imports
-def _json_default(obj):
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.floating):
-        return float(obj)
-    if isinstance(obj, np.integer):
-        return int(obj)
-    return str(obj)
-
-
 def _save_result(name: str, data: dict):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     with open(RESULTS_DIR / f"{name}.json", 'w') as f:

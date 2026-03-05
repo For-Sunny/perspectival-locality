@@ -41,7 +41,7 @@ from src.utils import NumpyEncoder
 
 try:
     import torch
-    HAS_GPU = torch.cuda.is_available()
+    HAS_GPU = torch.cuda.is_available() and "--no-gpu" not in sys.argv
 except ImportError:
     HAS_GPU = False
 
@@ -95,12 +95,12 @@ def compute_dim_ratio(psi, n_qubits, subset):
     return float(dim_full), float(dim_obs), float(ratio)
 
 
-def bootstrap_ci(values, n_boot=2000, ci=0.95):
+def bootstrap_ci(values, n_boot=2000, ci=0.95, seed=42):
     """Bootstrap confidence interval for the mean. Returns (mean, lo, hi) tuple."""
     values = np.array([v for v in values if np.isfinite(v)])
     if len(values) < 3:
         return float('nan'), float('nan'), float('nan')
-    result = _stats_bootstrap_ci(values, n_bootstrap=n_boot, ci=ci, seed=42)
+    result = _stats_bootstrap_ci(values, n_bootstrap=n_boot, ci=ci, seed=seed)
     return result["estimate"], result["ci_low"], result["ci_high"]
 
 
@@ -250,9 +250,10 @@ def run_symmetry_breaking(n_qubits=8, n_trials=20):
                 all_pearson_xx.extend(kr['pearson_xx'])
 
             # Bootstrap CIs
-            dr_mean, dr_lo, dr_hi = bootstrap_ci(all_dim_ratios)
-            rzz_mean, rzz_lo, rzz_hi = bootstrap_ci(all_pearson_zz)
-            rxx_mean, rxx_lo, rxx_hi = bootstrap_ci(all_pearson_xx)
+            ci_seed = hash((model_key, k)) % (2**31)
+            dr_mean, dr_lo, dr_hi = bootstrap_ci(all_dim_ratios, seed=ci_seed)
+            rzz_mean, rzz_lo, rzz_hi = bootstrap_ci(all_pearson_zz, seed=ci_seed + 1)
+            rxx_mean, rxx_lo, rxx_hi = bootstrap_ci(all_pearson_xx, seed=ci_seed + 2)
 
             model_summary[k_str] = {
                 'k': k,

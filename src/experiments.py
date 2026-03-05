@@ -4,7 +4,7 @@ PLC Experiments: Emergent Locality from Partial Observation.
 Four experiments that together demonstrate the core PLC result:
 1. Symmetry breaking: partial trace breaks permutation symmetry
 2. Emergent metric: mutual information defines geometry where none existed
-3. Sheaf convergence: overlapping patches converge to local description
+3. (Removed — sheaf consistency is trivially guaranteed for pure states)
 4. Scaling: effect strengthens with system size and partiality ratio
 
 Built by Opus Warrior, March 5 2026.
@@ -20,7 +20,7 @@ from pathlib import Path
 from .quantum import (
     heisenberg_all_to_all, random_all_to_all,
     ground_state, ground_state_gpu,
-    partial_trace, mutual_information_matrix,
+    mutual_information_matrix,
     correlation_matrix, von_neumann_entropy,
     mutual_information, connected_correlation,
 )
@@ -324,142 +324,6 @@ def _effective_dimension(D: np.ndarray, threshold: float = 0.9) -> float:
     # Find dimension where cumulative > threshold
     dim = np.searchsorted(cumulative, threshold) + 1
     return float(dim)
-
-
-# ─────────────────────────────────────────────────────────────
-# Experiment 3: Sheaf Condition Convergence
-# ─────────────────────────────────────────────────────────────
-
-def experiment_3_sheaf_convergence(n_qubits: int = 8, use_gpu: bool = True) -> dict:
-    """
-    Show that overlapping partial observations satisfy the sheaf condition,
-    and convergence improves with more patches.
-
-    The sheaf condition: if two patches U and V overlap on U∩V,
-    the reduced density matrices must agree on the overlap:
-        Tr_{U\\V}(rho_U) = Tr_{V\\U}(rho_V) = rho_{U cap V}
-
-    For a pure state, this is guaranteed by quantum mechanics (marginals are consistent).
-    The interesting question is: how much of the FULL state can be reconstructed
-    from overlapping patches? And does the reconstructed state exhibit locality?
-
-    We measure:
-    1. For each patch size k, how much of the full MI structure is captured
-    2. As we add more overlapping patches, reconstruction improves
-    3. The reconstructed MI matrix has LOWER effective dimension than the true one
-       (locality emerges from the reconstruction process)
-    """
-    print(f"\n{'='*60}")
-    print(f"  EXPERIMENT 3: Sheaf Condition Convergence")
-    print(f"  N = {n_qubits} qubits")
-    print(f"{'='*60}\n")
-
-    t0 = time.time()
-    diag_fn = ground_state_gpu if use_gpu else ground_state
-
-    # Random Hamiltonian
-    H, couplings = random_all_to_all(n_qubits, seed=42)
-    E0, psi = diag_fn(H)
-
-    # Ground truth: full MI matrix
-    MI_true = mutual_information_matrix(psi, n_qubits)
-    print(f"  Ground truth MI matrix computed.")
-
-    # Sheaf consistency check: for overlapping patches, do marginals agree?
-    patch_sizes = list(range(2, n_qubits))
-    consistency_scores = {}
-
-    for k in patch_sizes:
-        all_patches = list(combinations(range(n_qubits), k))
-        if len(all_patches) > 50:
-            # Sample random patches
-            rng = np.random.default_rng(42)
-            indices = rng.choice(len(all_patches), 50, replace=False)
-            patches = [all_patches[i] for i in indices]
-        else:
-            patches = all_patches
-
-        # Check pairwise consistency on overlaps
-        violations = 0
-        checks = 0
-        for i in range(len(patches)):
-            for j in range(i + 1, len(patches)):
-                overlap = set(patches[i]) & set(patches[j])
-                if len(overlap) >= 2:
-                    # Compute rho on overlap from each patch's perspective
-                    rho_from_i = partial_trace(psi, list(overlap), n_qubits)
-                    rho_from_j = partial_trace(psi, list(overlap), n_qubits)
-                    # For a pure state these are identical (quantum marginals)
-                    # Measure the trace distance
-                    diff = np.linalg.norm(rho_from_i - rho_from_j, 'fro')
-                    if diff > 1e-10:
-                        violations += 1
-                    checks += 1
-
-        consistency_scores[k] = {
-            "patch_size": k,
-            "n_patches": len(patches),
-            "n_checks": checks,
-            "violations": violations,
-            "perfect": violations == 0,
-        }
-        print(f"  Patch size {k}: {len(patches)} patches, {checks} overlap checks, {violations} violations")
-
-    # NOW: reconstruction from patches
-    # Use overlapping patches to reconstruct pairwise MI
-    print(f"\n  Reconstructing MI from overlapping patches...")
-
-    reconstruction_results = []
-    for k in range(2, n_qubits):
-        MI_reconstructed = np.full((n_qubits, n_qubits), np.nan)
-        np.fill_diagonal(MI_reconstructed, 0.0)
-
-        all_patches = list(combinations(range(n_qubits), k))
-        for patch in all_patches:
-            MI_patch = mutual_information_matrix(psi, n_qubits, list(patch))
-            # Fill in the entries we can see
-            for pi, qi in enumerate(patch):
-                for pj, qj in enumerate(patch):
-                    if pi != pj:
-                        if np.isnan(MI_reconstructed[qi, qj]):
-                            MI_reconstructed[qi, qj] = MI_patch[pi, pj]
-                        else:
-                            # Average with existing (consistency check)
-                            MI_reconstructed[qi, qj] = 0.5 * (
-                                MI_reconstructed[qi, qj] + MI_patch[pi, pj]
-                            )
-
-        # How well does reconstruction match truth?
-        mask = ~np.isnan(MI_reconstructed)
-        if np.any(mask & (np.eye(n_qubits) == 0)):
-            valid = mask & (np.eye(n_qubits) == 0)
-            error = np.mean(np.abs(MI_reconstructed[valid] - MI_true[valid]))
-            coverage = np.sum(valid) / (n_qubits * (n_qubits - 1))
-            reconstruction_results.append({
-                "patch_size": k,
-                "coverage": float(coverage),
-                "mean_error": float(error),
-                "n_patches": len(all_patches),
-            })
-            print(f"  k={k}: coverage={coverage:.1%}, error={error:.6f}")
-
-    elapsed = time.time() - t0
-    print(f"\n  Sheaf condition: PERFECTLY satisfied (as expected for pure state)")
-    print(f"  Key result: even partial patches reconstruct full MI with zero error")
-    print(f"  This IS the sheaf condition: local views glue into global consistency")
-    print(f"\n  Elapsed: {elapsed:.1f}s")
-
-    result = {
-        "experiment": "sheaf_convergence",
-        "n_qubits": n_qubits,
-        "MI_true": MI_true,
-        "consistency_scores": consistency_scores,
-        "reconstruction": reconstruction_results,
-        "elapsed_seconds": elapsed,
-    }
-
-    _save_result("exp3_sheaf_convergence", result)
-    return result
 
 
 # ─────────────────────────────────────────────────────────────
@@ -769,7 +633,9 @@ def run_all(n_qubits: int = 8, use_gpu: bool = True):
 
     results['exp1'] = experiment_1_symmetry_breaking(n_qubits, use_gpu)
     results['exp2'] = experiment_2_emergent_metric(n_qubits, use_gpu=use_gpu)
-    results['exp3'] = experiment_3_sheaf_convergence(n_qubits, use_gpu)
+    # Experiment 3 (sheaf convergence) removed — sheaf consistency is
+    # trivially guaranteed for pure states (both partial traces compute the
+    # same marginal). The experiment was vacuous.
     results['exp4'] = experiment_4_scaling(
         n_values=[6, 8] if n_qubits <= 8 else [6, 8, n_qubits],
         use_gpu=use_gpu

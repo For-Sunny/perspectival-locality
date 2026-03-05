@@ -54,10 +54,11 @@ def main():
 
     t0 = time.time()
 
+    use_gpu = "--no-gpu" not in sys.argv
     results = run_circularity_breaking(
         n_values=[8, 10],
         n_hamiltonians=20,
-        use_gpu=True,
+        use_gpu=use_gpu,
         verbose=True,
     )
 

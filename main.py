@@ -24,7 +24,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 from src.experiments import (
     experiment_1_symmetry_breaking,
     experiment_2_emergent_metric,
-    experiment_3_sheaf_convergence,
     experiment_4_scaling,
     experiment_5_correlation_decay,
     run_all,
@@ -34,7 +33,7 @@ from src.experiments import (
 def main():
     parser = argparse.ArgumentParser(description="PLC Simulation")
     parser.add_argument("--n", type=int, default=8, help="Number of qubits (default: 8)")
-    parser.add_argument("--exp", type=int, choices=[1, 2, 3, 4, 5], help="Run specific experiment")
+    parser.add_argument("--exp", type=int, choices=[1, 2, 4, 5], help="Run specific experiment")
     parser.add_argument("--no-gpu", action="store_true", help="Disable GPU")
     args = parser.parse_args()
 
@@ -44,8 +43,6 @@ def main():
         experiment_1_symmetry_breaking(args.n, use_gpu)
     elif args.exp == 2:
         experiment_2_emergent_metric(args.n, use_gpu=use_gpu)
-    elif args.exp == 3:
-        experiment_3_sheaf_convergence(args.n, use_gpu)
     elif args.exp == 4:
         experiment_4_scaling(use_gpu=use_gpu)
     elif args.exp == 5:

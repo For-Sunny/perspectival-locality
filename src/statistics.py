@@ -265,6 +265,8 @@ def eigenvalue_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
     diag_lambda = np.diag(eigenvalues)
 
     null_rs = np.empty(n_shuffles)
+    clamped_fractions = np.empty(n_shuffles)
+    n_offdiag = len(triu_i)
     for s in range(n_shuffles):
         # Random orthogonal matrix
         Q_rand = special_ortho_group.rvs(n, random_state=rng)
@@ -273,6 +275,9 @@ def eigenvalue_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
         MI_null = (MI_null + MI_null.T) / 2.0
         # Extract upper-triangle MI values
         mi_null_vals = MI_null[triu_i, triu_j]
+        # Track how many entries need clamping (diagnostic for reviewer)
+        n_clamped = int(np.sum(mi_null_vals < 0))
+        clamped_fractions[s] = n_clamped / n_offdiag
         # Clamp tiny negatives from rotation
         mi_null_vals = np.maximum(mi_null_vals, 0.0)
         null_rs[s] = _pearson_r_log_corr_vs_dist(mi_null_vals, corr_values)
@@ -288,6 +293,8 @@ def eigenvalue_preserving_null(MI_obs: np.ndarray, C_obs: np.ndarray,
         "effect_size": float((real_r - np.mean(null_rs)) / np.std(null_rs))
             if np.std(null_rs) > 1e-14 else 0.0,
         "null_type": "eigenvalue_preserving",
+        "clamped_fraction_mean": float(np.mean(clamped_fractions)),
+        "clamped_fraction_max": float(np.max(clamped_fractions)),
     }
 
 
@@ -462,6 +469,51 @@ def _pearson_r_log_corr_vs_dist(mi_values: np.ndarray,
 
 
 # ─────────────────────────────────────────────────────────────
+# Null model 5: dimension reduction from subsampling
+# ─────────────────────────────────────────────────────────────
+
+def dimension_reduction_null(D_full: 'np.ndarray', k: int,
+                              n_shuffles: int = 200, seed: int = 0) -> dict:
+    """
+    Null model for Experiments 2/4: does subsampling k points from the
+    full-system MDS embedding trivially reduce effective dimension?
+
+    Computes effective dimension of k randomly sampled rows/cols from
+    the full distance matrix D_full. If observer dimension is comparable
+    to this null, the dimension reduction is just a subsampling ceiling
+    effect, not a PLC phenomenon.
+
+    Args:
+        D_full: full-system distance matrix (N x N).
+        k: number of qubits in the observer subset.
+        n_shuffles: number of random subsamples.
+        seed: RNG seed.
+
+    Returns:
+        dict with null dimension statistics.
+    """
+    from .experiments import _effective_dimension
+
+    rng = np.random.default_rng(seed)
+    N = D_full.shape[0]
+
+    null_dims = np.empty(n_shuffles)
+    for s in range(n_shuffles):
+        subset = rng.choice(N, k, replace=False)
+        D_sub = D_full[np.ix_(subset, subset)]
+        null_dims[s] = _effective_dimension(D_sub)
+
+    return {
+        "null_dim_mean": float(np.mean(null_dims)),
+        "null_dim_std": float(np.std(null_dims, ddof=1)),
+        "null_dim_median": float(np.median(null_dims)),
+        "n_shuffles": n_shuffles,
+        "k": k,
+        "N": N,
+    }
+
+
+# ─────────────────────────────────────────────────────────────
 # Hardened experiment runners
 # ─────────────────────────────────────────────────────────────
 
@@ -518,12 +570,18 @@ def hardened_experiment_2(n_qubits_list: list[int], n_trials: int = 50,
                 dim_obs_mean = np.mean(dim_obs_list)
                 ratio = dim_obs_mean / dim_full if dim_full > 0 else 0.0
 
+                # Dimension reduction null: subsample k points from full D
+                dim_null = dimension_reduction_null(
+                    D_full, k, n_shuffles=200, seed=seed + k * 100)
+
                 key = (N, k)
                 if key not in all_data:
-                    all_data[key] = {"dim_full": [], "dim_obs": [], "ratio": []}
+                    all_data[key] = {"dim_full": [], "dim_obs": [], "ratio": [],
+                                     "dim_null_mean": []}
                 all_data[key]["dim_full"].append(dim_full)
                 all_data[key]["dim_obs"].append(dim_obs_mean)
                 all_data[key]["ratio"].append(ratio)
+                all_data[key]["dim_null_mean"].append(dim_null["null_dim_mean"])
 
             if (trial + 1) % 10 == 0:
                 print(f"    Trial {trial + 1}/{n_trials}")
@@ -543,6 +601,13 @@ def hardened_experiment_2(n_qubits_list: list[int], n_trials: int = 50,
         perm = permutation_test_dim_ratio(dim_full_arr, dim_obs_arr,
                                            n_perms=n_bootstrap, seed=42 + N * 100 + k)
 
+        # Dimension reduction null comparison
+        dim_null_arr = np.array(data["dim_null_mean"])
+        mean_null_dim = float(np.mean(dim_null_arr))
+        mean_obs_dim = float(np.mean(dim_obs_arr))
+        # Is observer dim lower than null subsample dim?
+        below_null = mean_obs_dim < mean_null_dim
+
         key_str = f"N={N}_k={k}"
         results[key_str] = {
             "N": N,
@@ -551,16 +616,24 @@ def hardened_experiment_2(n_qubits_list: list[int], n_trials: int = 50,
             "n_trials": len(ratios),
             "dim_ratio_bootstrap": ci,
             "permutation_test": perm,
+            "dim_reduction_null": {
+                "mean_null_dim": mean_null_dim,
+                "mean_obs_dim": mean_obs_dim,
+                "obs_below_null": below_null,
+                "description": "Effective dim of k random points from full MDS embedding",
+            },
             "raw_ratios": ratios.tolist(),
             "raw_dim_full": dim_full_arr.tolist(),
             "raw_dim_obs": dim_obs_arr.tolist(),
         }
 
         sig = "***" if perm["p_value"] < 0.001 else "**" if perm["p_value"] < 0.01 else "*" if perm["p_value"] < 0.05 else "ns"
+        null_tag = "BELOW null" if below_null else "ABOVE null (ceiling effect)"
         print(f"\n  N={N}, k={k} (k/N={k_over_N:.2f}):")
         print(f"    dim_ratio = {ci['estimate']:.4f}  95% CI [{ci['ci_low']:.4f}, {ci['ci_high']:.4f}]")
         print(f"    permutation p = {perm['p_value']:.6f} {sig}")
         print(f"    mean dim_full = {np.mean(dim_full_arr):.2f}, mean dim_obs = {np.mean(dim_obs_arr):.2f}")
+        print(f"    dim reduction null = {mean_null_dim:.2f}, observer = {mean_obs_dim:.2f} -> {null_tag}")
 
     return results
 
@@ -713,6 +786,6 @@ def hardened_experiment_5(n_qubits_list: list[int], n_trials: int = 50,
         print(f"      H0(r>=0) p = {p_test_pooled['p_value_ttest_onesided']:.6f} {sig_p}")
         print(f"    Null model: real r = {null_summary['mean_real_r']:.4f}, shuffled r = {null_summary['mean_null_r']:.4f}")
         print(f"    Null p<0.05 in {null_summary['frac_null_p_lt_005']:.1%} of trials")
-        print(f"    Effect size (Cohen's d from null): {null_summary['mean_effect_size']:.2f}")
+        print(f"    Standardized effect size (z from null): {null_summary['mean_effect_size']:.2f}")
 
     return results
