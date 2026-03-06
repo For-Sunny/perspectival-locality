@@ -1,0 +1,112 @@
+{
+  "experiment": "curvature_vs_entanglement",
+  "n_qubits": 4,
+  "n_samples": 5,
+  "alpha": 0.5,
+  "delta_values": [
+    10.0,
+    5.0,
+    2.0,
+    1.5,
+    1.0,
+    0.7,
+    0.5,
+    0.3,
+    0.1
+  ],
+  "records": [
+    {
+      "delta": 10.0,
+      "half_system_entropy_mean": 0.3247815158448791,
+      "half_system_entropy_std": 0.4054751865371123,
+      "ollivier_scalar_mean": 0.23140160742813096,
+      "ollivier_scalar_std": 0.36840355073127046,
+      "forman_scalar_mean": -0.23140160742813096,
+      "forman_scalar_std": 0.36840355073127046,
+      "n_samples": 5
+    },
+    {
+      "delta": 5.0,
+      "half_system_entropy_mean": 0.4464896817084128,
+      "half_system_entropy_std": 0.46229806947980945,
+      "ollivier_scalar_mean": 0.2501057606991557,
+      "ollivier_scalar_std": 0.3314403325595354,
+      "forman_scalar_mean": -0.2501057606991557,
+      "forman_scalar_std": 0.3314403325595354,
+      "n_samples": 5
+    },
+    {
+      "delta": 2.0,
+      "half_system_entropy_mean": 0.6506380333343005,
+      "half_system_entropy_std": 0.6049919775953982,
+      "ollivier_scalar_mean": 0.25788374241520123,
+      "ollivier_scalar_std": 0.2596416823012875,
+      "forman_scalar_mean": -0.25788374241520123,
+      "forman_scalar_std": 0.2596416823012875,
+      "n_samples": 5
+    },
+    {
+      "delta": 1.5,
+      "half_system_entropy_mean": 0.7011755966371401,
+      "half_system_entropy_std": 0.6460911681381405,
+      "ollivier_scalar_mean": 0.2597390778923888,
+      "ollivier_scalar_std": 0.24636506276606157,
+      "forman_scalar_mean": -0.2597390778923888,
+      "forman_scalar_std": 0.24636506276606157,
+      "n_samples": 5
+    },
+    {
+      "delta": 1.0,
+      "half_system_entropy_mean": 1.306322039779174,
+      "half_system_entropy_std": 0.4603129036397007,
+      "ollivier_scalar_mean": 0.5738594801408039,
+      "ollivier_scalar_std": 0.1383362455887522,
+      "forman_scalar_mean": -0.5738594801408039,
+      "forman_scalar_std": 0.1383362455887522,
+      "n_samples": 5
+    },
+    {
+      "delta": 0.7,
+      "half_system_entropy_mean": 1.7194126844000146,
+      "half_system_entropy_std": 0.21183503464273173,
+      "ollivier_scalar_mean": 0.666712439922863,
+      "ollivier_scalar_std": 0.03661414867338915,
+      "forman_scalar_mean": -0.666712439922863,
+      "forman_scalar_std": 0.03661414867338915,
+      "n_samples": 5
+    },
+    {
+      "delta": 0.5,
+      "half_system_entropy_mean": 1.6982059522517523,
+      "half_system_entropy_std": 0.20554579298326417,
+      "ollivier_scalar_mean": 0.6694188910446834,
+      "ollivier_scalar_std": 0.03144570841663179,
+      "forman_scalar_mean": -0.6694188910446834,
+      "forman_scalar_std": 0.03144570841663179,
+      "n_samples": 5
+    },
+    {
+      "delta": 0.3,
+      "half_system_entropy_mean": 1.6445787212342293,
+      "half_system_entropy_std": 0.23517067138818595,
+      "ollivier_scalar_mean": 0.6747953358854313,
+      "ollivier_scalar_std": 0.027300626798554065,
+      "forman_scalar_mean": -0.6747953358854313,
+      "forman_scalar_std": 0.027300626798554065,
+      "n_samples": 5
+    },
+    {
+      "delta": 0.1,
+      "half_system_entropy_mean": 1.5701338125068662,
+      "half_system_entropy_std": 0.31290039982954704,
+      "ollivier_scalar_mean": 0.6776729371096601,
+      "ollivier_scalar_std": 0.026198964040131847,
+      "forman_scalar_mean": -0.6776729371096601,
+      "forman_scalar_std": 0.026198964040131847,
+      "n_samples": 5
+    }
+  ],
+  "correlation_entropy_ollivier": 0.9834514648439905,
+  "correlation_entropy_forman": -0.9834514648439905,
+  "elapsed_seconds": 0.05766105651855469
+}

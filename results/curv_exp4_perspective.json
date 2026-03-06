@@ -1,0 +1,52 @@
+{
+  "experiment": "perspective_dependent_curvature",
+  "n_qubits": 4,
+  "k": 3,
+  "n_samples": 2,
+  "max_subsets": 4,
+  "alpha": 0.5,
+  "sample_records": [
+    {
+      "sample": 0,
+      "E0": -7.1248791347898655,
+      "n_subsets": 4,
+      "curvature_mean": 1.0,
+      "curvature_std": 0.0,
+      "curvature_min": 1.0,
+      "curvature_max": 1.0,
+      "curvature_range": 0.0,
+      "curvature_iqr": 0.0,
+      "curvatures": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "sample": 1,
+      "E0": -6.6475382777387635,
+      "n_subsets": 4,
+      "curvature_mean": 1.0,
+      "curvature_std": 0.0,
+      "curvature_min": 1.0,
+      "curvature_max": 1.0,
+      "curvature_range": 0.0,
+      "curvature_iqr": 0.0,
+      "curvatures": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "aggregate": {
+    "mean_spread_std": 0.0,
+    "std_spread_std": 0.0,
+    "mean_range": 0.0,
+    "mean_iqr": 0.0,
+    "is_perspective_dependent": false
+  },
+  "elapsed_seconds": 0.028306961059570312
+}

@@ -1,0 +1,36 @@
+{
+  "experiment": "local_vs_nonlocal",
+  "n_qubits": 4,
+  "k": 3,
+  "n_samples": 2,
+  "delta": 1.0,
+  "alpha": 0.5,
+  "all_to_all": {
+    "ollivier_scalars": [
+      1.0,
+      1.0
+    ],
+    "forman_scalars": [
+      2.0,
+      2.0
+    ],
+    "ollivier_mean": 1.0,
+    "ollivier_std": 0.0,
+    "forman_mean": 2.0
+  },
+  "chain": {
+    "ollivier_scalars": [
+      1.0,
+      1.0
+    ],
+    "forman_scalars": [
+      2.0,
+      2.0
+    ],
+    "ollivier_mean": 1.0,
+    "ollivier_std": 0.0,
+    "forman_mean": 2.0
+  },
+  "chain_more_negative": false,
+  "elapsed_seconds": 0.016530990600585938
+}

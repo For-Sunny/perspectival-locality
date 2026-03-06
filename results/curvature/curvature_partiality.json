@@ -1,0 +1,89 @@
+{
+  "experiment": "curvature_vs_partiality",
+  "n_qubits": 12,
+  "n_samples": 10,
+  "alpha": 0.5,
+  "results_table": [
+    {
+      "k": 3,
+      "k_over_N": 0.25,
+      "scalar_curvature_mean": 1.0,
+      "scalar_curvature_std": 0.0,
+      "scalar_curvature_median": 1.0,
+      "n_observations": 150
+    },
+    {
+      "k": 4,
+      "k_over_N": 0.3333333333333333,
+      "scalar_curvature_mean": 0.1673681656727022,
+      "scalar_curvature_std": 1.2457737833445626,
+      "scalar_curvature_median": 0.31632625938529507,
+      "n_observations": 150
+    },
+    {
+      "k": 5,
+      "k_over_N": 0.4166666666666667,
+      "scalar_curvature_mean": 0.15459818020205213,
+      "scalar_curvature_std": 0.5741047674017475,
+      "scalar_curvature_median": 0.2903799699724125,
+      "n_observations": 150
+    },
+    {
+      "k": 6,
+      "k_over_N": 0.5,
+      "scalar_curvature_mean": 0.24935785745346162,
+      "scalar_curvature_std": 0.3180319553335295,
+      "scalar_curvature_median": 0.29761784294476584,
+      "n_observations": 150
+    },
+    {
+      "k": 7,
+      "k_over_N": 0.5833333333333334,
+      "scalar_curvature_mean": 0.20004920406497362,
+      "scalar_curvature_std": 0.37533587211812236,
+      "scalar_curvature_median": 0.2575956488716745,
+      "n_observations": 150
+    },
+    {
+      "k": 8,
+      "k_over_N": 0.6666666666666666,
+      "scalar_curvature_mean": 0.23453889098232195,
+      "scalar_curvature_std": 0.17261959193558005,
+      "scalar_curvature_median": 0.27542253306961656,
+      "n_observations": 150
+    },
+    {
+      "k": 9,
+      "k_over_N": 0.75,
+      "scalar_curvature_mean": 0.23016361363794838,
+      "scalar_curvature_std": 0.10086865444471173,
+      "scalar_curvature_median": 0.24384432391953303,
+      "n_observations": 150
+    },
+    {
+      "k": 10,
+      "k_over_N": 0.8333333333333334,
+      "scalar_curvature_mean": 0.22874842191767727,
+      "scalar_curvature_std": 0.09175416355935533,
+      "scalar_curvature_median": 0.23451022478860806,
+      "n_observations": 150
+    },
+    {
+      "k": 11,
+      "k_over_N": 0.9166666666666666,
+      "scalar_curvature_mean": 0.23367394629979915,
+      "scalar_curvature_std": 0.07296443780186442,
+      "scalar_curvature_median": 0.23423062804785394,
+      "n_observations": 120
+    },
+    {
+      "k": 12,
+      "k_over_N": 1.0,
+      "scalar_curvature_mean": 0.2298166622971864,
+      "scalar_curvature_std": 0.05711699483836361,
+      "scalar_curvature_median": 0.24184946258062734,
+      "n_observations": 10
+    }
+  ],
+  "elapsed_seconds": 56.11348223686218
+}

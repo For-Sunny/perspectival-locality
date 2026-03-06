@@ -1,0 +1,25 @@
+{
+  "experiment": "curvature_vs_partiality",
+  "n_qubits": 4,
+  "n_samples": 2,
+  "alpha": 0.5,
+  "results_table": [
+    {
+      "k": 3,
+      "k_over_N": 0.75,
+      "scalar_curvature_mean": 0.5,
+      "scalar_curvature_std": 0.5,
+      "scalar_curvature_median": 0.5,
+      "n_observations": 8
+    },
+    {
+      "k": 4,
+      "k_over_N": 1.0,
+      "scalar_curvature_mean": -0.24853911922575886,
+      "scalar_curvature_std": 0.24853911922575886,
+      "scalar_curvature_median": -0.24853911922575886,
+      "n_observations": 2
+    }
+  ],
+  "elapsed_seconds": 0.024869680404663086
+}
