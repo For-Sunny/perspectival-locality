@@ -1,5 +1,7 @@
 # Emergent Spatial Locality from Partial Observation
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18883867.svg)](https://doi.org/10.5281/zenodo.18883867)
+
 Numerical experiments demonstrating that spatial locality can emerge from the
 structure of partial observation in finite quantum systems. A system of N qubits
 with random all-to-all Heisenberg couplings has no built-in spatial structure,
@@ -135,6 +137,8 @@ MIT License. See [LICENSE](LICENSE).
              in Finite Quantum Systems},
   author  = {Glass, Jason},
   year    = {2026},
+  doi     = {10.5281/zenodo.18883867},
+  url     = {https://doi.org/10.5281/zenodo.18883867},
   note    = {Computational component developed in collaboration
              with Opus (Anthropic Claude Opus 4)}
 }
