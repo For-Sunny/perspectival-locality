@@ -1,0 +1,33 @@
+{
+    "title": "Perspectival Locality: Emergent Geometry from Partial Observation",
+    "description": "Code and data for the Perspectival Locality Conjecture (PLC) paper series. Paper 1: Emergent Spatial Locality from Partial Observation. Paper 2: Emergent Curvature from Partial Observation. Paper 3: Scaling of Perspectival Curvature (N=8 to N=20).",
+    "upload_type": "software",
+    "creators": [
+        {
+            "name": "Glass, Jason",
+            "affiliation": "CIPS Corp LLC"
+        }
+    ],
+    "keywords": [
+        "quantum foundations",
+        "emergent spacetime",
+        "mutual information",
+        "Ollivier-Ricci curvature",
+        "quantum reference frames",
+        "partial observation"
+    ],
+    "license": "MIT",
+    "related_identifiers": [
+        {
+            "identifier": "10.5281/zenodo.18883867",
+            "relation": "isPartOf",
+            "scheme": "doi"
+        },
+        {
+            "identifier": "10.5281/zenodo.18889599",
+            "relation": "isPartOf",
+            "scheme": "doi"
+        }
+    ],
+    "access_right": "open"
+}
