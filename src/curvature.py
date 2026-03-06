@@ -22,12 +22,13 @@ from typing import Optional
 # Graph construction from MI matrix
 # ─────────────────────────────────────────────────────────────
 
-def mi_to_graph(mi_matrix: np.ndarray, threshold: Optional[float] = None) -> nx.Graph:
+def mi_to_graph(mi_matrix: np.ndarray, threshold: Optional[float] = None,
+                min_distance: Optional[float] = None) -> nx.Graph:
     """
     Build weighted graph from mutual information matrix.
 
     Edge weight = MI value (higher MI = stronger connection).
-    Edge distance = 1/MI (used for shortest-path computations).
+    Edge distance = max(1/MI, min_distance) (used for shortest-path computations).
 
     Args:
         mi_matrix: NxN symmetric MI matrix (diagonal ignored).
@@ -35,9 +36,14 @@ def mi_to_graph(mi_matrix: np.ndarray, threshold: Optional[float] = None) -> nx.
                    and keep only edges above that percentile.
                    If float >= 1, treat as absolute MI threshold.
                    If None, keep all edges with MI > 0.
+        min_distance: floor on edge distances. Prevents 1/MI from approaching
+                      zero when MI is very large, which causes ORC instability.
+                      If None, no floor is applied (backward compatible).
+                      If a float > 0, all edge distances are clipped to
+                      max(1/MI, min_distance).
 
     Returns:
-        nx.Graph with 'weight' (MI) and 'distance' (1/MI) edge attributes.
+        nx.Graph with 'weight' (MI) and 'distance' (1/MI, floored) edge attributes.
     """
     n = mi_matrix.shape[0]
     G = nx.Graph()
@@ -61,12 +67,18 @@ def mi_to_graph(mi_matrix: np.ndarray, threshold: Optional[float] = None) -> nx.
         else:
             cutoff = threshold
 
+    # Distance floor
+    d_floor = float(min_distance) if min_distance is not None and min_distance > 0 else 0.0
+
     # Add edges
     for i in range(n):
         for j in range(i + 1, n):
             mi = mi_matrix[i, j]
             if mi > max(cutoff, 1e-14):
-                G.add_edge(i, j, weight=float(mi), distance=1.0 / float(mi))
+                d = 1.0 / float(mi)
+                if d_floor > 0:
+                    d = max(d, d_floor)
+                G.add_edge(i, j, weight=float(mi), distance=d)
 
     return G
 
@@ -203,7 +215,7 @@ def _lazy_random_walk_measure(G: nx.Graph, node: int, alpha: float,
 
 
 def ollivier_ricci(mi_matrix: np.ndarray, threshold: Optional[float] = None,
-                   alpha: float = 0.5) -> dict:
+                   alpha: float = 0.5, min_distance: Optional[float] = None) -> dict:
     """
     Ollivier-Ricci curvature for the MI-distance graph.
 
@@ -224,8 +236,9 @@ def ollivier_ricci(mi_matrix: np.ndarray, threshold: Optional[float] = None,
             'scalar_curvature': mean of all edge curvatures
             'edges': list of (i, j, kappa) tuples
             'n_edges': number of edges
+            'min_distance_used': the distance floor applied
     """
-    G = mi_to_graph(mi_matrix, threshold=threshold)
+    G = mi_to_graph(mi_matrix, threshold=threshold, min_distance=min_distance)
 
     if G.number_of_edges() == 0:
         return {
