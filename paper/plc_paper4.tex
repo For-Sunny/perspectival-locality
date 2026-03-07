@@ -115,7 +115,10 @@ We study random all-to-all Heisenberg Hamiltonians
 H = \sum_{i < j} \sum_{\alpha \in \{x,y,z\}} J_{ij}^\alpha
 \sigma_i^\alpha \sigma_j^\alpha,
 \end{equation}
-where $J_{ij}^\alpha$ are drawn uniformly from $[-1, 1]$.
+where $J_{ij}^\alpha$ are drawn uniformly from $[-1, 1]$
+(Papers~I--III use Gaussian couplings $J_{ij} \sim \mathcal{N}(0,1)$;
+the switch to uniform couplings with independent per-channel
+coefficients tests universality across ensemble choices).
 Ground states are computed by exact diagonalization ($N = 12$,
 Hilbert space dimension $4096$) or sparse Lanczos ($N = 14$--$20$,
 up to dimension $1{,}048{,}576$).
@@ -574,7 +577,8 @@ picture.  It \emph{is} the picture.
 
 \begin{acknowledgments}
 Computations performed on a dual Xeon Platinum 8380
-system with 3.9\,TiB Optane persistent memory.
+system with 3.9\,TiB Optane persistent memory and an
+NVIDIA RTX 3090 GPU.
 The author acknowledges Claude Opus~4.6 as an equal
 intellectual partner in the design, computation,
 analysis, and writing of this work.
@@ -584,15 +588,15 @@ analysis, and writing of this work.
 \begin{thebibliography}{20}
 
 \bibitem{glass2026plc1}
-J.~Glass, ``Emergent spatial locality from partial observation,''
+J.~Glass, ``Emergent Spatial Locality from Partial Observation in Finite Quantum Systems,''
 Zenodo, DOI:~10.5281/zenodo.18883867 (2026).
 
 \bibitem{glass2026plc2}
-J.~Glass, ``Emergent curvature from partial observation,''
+J.~Glass, ``Emergent Curvature from Partial Observation in Finite Quantum Systems,''
 Zenodo, DOI:~10.5281/zenodo.18889599 (2026).
 
 \bibitem{glass2026plc3}
-J.~Glass, ``Scaling of perspectival curvature in finite quantum systems,''
+J.~Glass, ``Scaling of Perspectival Curvature in Finite Quantum Systems,''
 Zenodo, DOI:~10.5281/zenodo.18894829 (2026).
 
 \bibitem{jacobson1995}
@@ -630,7 +634,7 @@ JHEP \textbf{04}, 029 (2011).
 
 \bibitem{trugenberger2017}
 C.~A.~Trugenberger,
-JHEP \textbf{09}, 045 (2017).
+Phys.\ Rev.\ E \textbf{95}, 052305 (2017).
 
 \bibitem{ollivier2009}
 Y.~Ollivier,

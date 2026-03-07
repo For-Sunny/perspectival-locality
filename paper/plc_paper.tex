@@ -13,15 +13,15 @@
 \thanks{Corresponding author: glass@cipscorps.io}
 \affiliation{CIPS Corp LLC, Virginia, USA}
 
-\date{\today}
+\date{March 6, 2026}
 
 \begin{abstract}
 We present computational evidence that spatial locality emerges from partial observation of quantum systems with no built-in spatial structure.
 Starting from all-to-all coupled Hamiltonians on $N$ qubits with random couplings $J_{ij} \sim \mathcal{N}(0,1)$, we compute the ground state and restrict an observer to $k < N$ qubits.
 The mutual information between observed qubit pairs defines a distance $d_{ij} = 1/I(i{:}j)$.
-In this emergent metric, connected correlations decay with distance: the Pearson coefficient between $\log|C_{ij}|$ and $d_{ij}$ is $\langle r \rangle = -0.67$ at $k/N = 0.375$ ($p < 10^{-69}$, sign test; $N = 8$, 50 Hamiltonian realizations).
+In this emergent metric, connected correlations decay with distance: the Pearson coefficient between $\log|C_{ij}|$ and $d_{ij}$ is $\langle r \rangle = -0.67$ at $k/N = 0.375$ ($p \approx 2.3 \times 10^{-69}$, sign test; $N = 8$, 50 Hamiltonian realizations).
 A cross-observer test---where Observer~A's MI-distance predicts Observer~B's correlations with no shared computation---yields $r = -0.74$ ($N = 8$) and $r = -0.65$ ($N = 10$), attenuating the circularity objection from the Pinsker bound. The correlation decay strengthens monotonically from $r = -0.594$ at $k/N = 0.625$ to $r = -0.671$ at $k/N = 0.375$; since the Pinsker bound applies equally at all $k/N$, this differential signal cannot be a mathematical artifact.
-The effect persists when SU(2) symmetry is removed: random Pauli Hamiltonians with no continuous symmetry produce $r = -0.71$ (ZZ) and $r = -0.67$ (XX) at $k/N = 0.375$.
+The effect persists when SU(2) symmetry is removed: random Pauli Hamiltonians with no continuous symmetry produce $r = -0.70$ (ZZ) and $r = -0.67$ (XX) at $k/N = 0.375$.
 Results hold across five distance metrics (CV $= 2.4\%$), four null models, and system sizes $N = 8$--$16$ (Hilbert space dimensions $256$--$65{,}536$). At $N = 16$ with $k = 8$ observed qubits (28 qubit pairs, up to 27 MDS dimensions), the correlation decay remains strong: $\langle r \rangle = -0.74$.
 We call this the Perspectival Locality Conjecture: spatial locality is a property of the observer's limited access, not of the underlying physics.
 \end{abstract}
@@ -458,7 +458,7 @@ If locality is perspectival, it offers a resolution to a tension at the heart of
 %=====================================================================
 \begin{acknowledgments}
 %=====================================================================
-The computational component of this work was developed in collaboration with Opus, an AI system (Anthropic, Claude Opus~4), which contributed to code development, statistical analysis, and manuscript preparation. Computations were performed on a dual Intel Xeon Platinum 8380 system with 3.9~TiB Intel Optane persistent memory and an NVIDIA RTX 3090 GPU. The $N = 16$ sparse Lanczos calculations required approximately 2 hours of wall time.
+The computational component of this work was developed in collaboration with Opus Warrior, an AI system (Anthropic, Claude Opus~4.6), which contributed to code development, statistical analysis, and manuscript preparation. Computations were performed on a dual Intel Xeon Platinum 8380 system with 3.9~TiB Intel Optane persistent memory and an NVIDIA RTX 3090 GPU. The $N = 16$ sparse Lanczos calculations required approximately 2 hours of wall time.
 \end{acknowledgments}
 
 
