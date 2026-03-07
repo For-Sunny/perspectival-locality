@@ -1,6 +1,6 @@
 {
     "title": "Perspectival Locality: Emergent Geometry from Partial Observation",
-    "description": "Code and data for the Perspectival Locality Conjecture (PLC) paper series. Paper 1: Emergent Spatial Locality from Partial Observation. Paper 2: Emergent Curvature from Partial Observation. Paper 3: Scaling of Perspectival Curvature (N=8 to N=20).",
+    "description": "Code and data for the Perspectival Locality Conjecture (PLC) paper series. Paper 1: Emergent Spatial Locality from Partial Observation. Paper 2: Emergent Curvature from Partial Observation. Paper 3: Scaling of Perspectival Curvature (N=8 to N=20). Paper 4: Matter-Geometry Complementarity from Partial Observation. Paper 5: Information-Theoretic Origin of Matter-Geometry Complementarity.",
     "upload_type": "software",
     "creators": [
         {
@@ -14,7 +14,10 @@
         "mutual information",
         "Ollivier-Ricci curvature",
         "quantum reference frames",
-        "partial observation"
+        "partial observation",
+        "total correlation",
+        "information budget",
+        "matter-geometry complementarity"
     ],
     "license": "MIT",
     "related_identifiers": [
@@ -25,6 +28,16 @@
         },
         {
             "identifier": "10.5281/zenodo.18889599",
+            "relation": "isPartOf",
+            "scheme": "doi"
+        },
+        {
+            "identifier": "10.5281/zenodo.18894829",
+            "relation": "isPartOf",
+            "scheme": "doi"
+        },
+        {
+            "identifier": "10.5281/zenodo.18896388",
             "relation": "isPartOf",
             "scheme": "doi"
         }
