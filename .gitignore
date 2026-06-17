@@ -18,3 +18,9 @@ venv/
 *.fdb_latexmk
 *.fls
 plots/
+paper/DRAFT_sheaf_locality_unification.md
+paper/DRAFT_sheaf_locality_PLC_public.md
+paper/*Notes.bib
+paper/*.aux
+paper/*.log
+paper/*.out
